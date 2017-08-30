@@ -1,5 +1,73 @@
 #!/usr/bin/env python
+#
+# TODO 
+#
+# 0) Implement Try/Except on all call_api returns like at line 542 
+#
+# 1) D2 replaces GetBungieAccount with GetProfile for finding Character IDs
+#    https://bungie-net.github.io/multi/operation_get_Destiny2-GetProfile.html#operation_get_Destiny2-GetProfile
+#
+# 2) Change Security group to try to allow Alexa Skill without 0.0.0.0/0
+#
+# 3) Try the SoundEx Matching to equip items by name.  
+#    Will require "import fuzzy" http://www.informit.com/articles/article.aspx?p=1848528
+#    Will need to take intent value and compare it's fuzzy against fuzzy of list of items.
+#    Will need to be able to find the itemId from that name. 
+#
+# 4) Keep saving cosmetics but remove them from Transfer/Equip intent unless "with cosmetics" is specified.
+#
+# 5) #GetItem - Need to be able to transfer items...  "Alexa, ask destiny loadouts for heavy ammo"
+#    Alexa, ask destiny loadouts for five passage coins.
+#    Alexa, ask desitny loadouts for thirteen strange coins.
+#    Alexa, ask destiny loadouts for all my spin metal.
+#
+# 6) #SplitItems - Need to be able to count all items in all locations and evenly split between characters.
+#    For instance, get count of heavy ammo in inventory on every character and in vault, then
+#    Count number of characters created and if heavy ammo is less than character count * 200 then
+#    Divide it and transfer it to all the created characters.
+#    If more than character count * 200, then after transfering 200 to each character, put rest in vault.
+#    Do this for ammos, planetary materials, passage coins, ect...
+#    1) to split heavy ammo
+#    2) to split all items
+#
+# 7) #SendEngrams - Need to be able to remove all engrams from active character's inventory for farming.
+#    to send engrams to vault = get engrams off character, preferably to vault, if vault is full then to other characters.
+#    Be able to send just exotics to vault. send exotic engrams to vault.
 
+# 8) #GetEngrams - Transfer engrams from vault and other characters to the current character.
+#    Prefer to get lower level engrams first until full, respond that character inventory is full but more engrams exist.
+#    Be able to get just exotics from vault.  get exotic engrams
+#    
+# 9) Implement new loadout for "favorite weapons" that goes to all characters (this should be easy with #10 done)
+# 
+# 10) Implement "Load favorite shader" from favorite loadout (Already implemented saving favorite items)
+#  
+
+'''def find_correct_account(self, display_name, clan_id):
+    print(" * SEARCHING CORRECT MEMBERSHIP ID")
+    search_results = self.bungie_display_name_lookup(display_name)
+    # print(search_results)
+    for account in search_results['Response']:
+        # print('account:', account)
+        this_membershipId = account['membershipId']
+        alt_user_lookup = self.get_bungie_account(this_membershipId)
+        # print('alt user: ', alt_user_lookup)
+        if alt_user_lookup['Response']['clans']:
+            for clan in alt_user_lookup['Response']['clans']:
+                print(type(clan['groupId']), 'vs', type(clan_id))
+                if int(clan['groupId']) == int(clan_id):
+                    correct_membership_id = this_membershipId
+                    print("   * FOUND CORRECT MEMBERSHIP ID")
+                    break
+                else:
+                    correct_membership_id = "REDACTED-ELSE"
+        else:
+            correct_membership_id = "REDACTED"
+            print("   * CANNOT FIND CORRECT MEMBERSHIP ID")
+    print("   * FOUND MEMBERSHIP ID:", correct_membership_id)
+    return correct_membership_id'''
+        
+        
 from __future__ import print_function
 from inspect import currentframe
 from urllib import urlopen
@@ -15,14 +83,15 @@ import pickle
 import urllib
 import urllib2
 
-app_title = "TITLE FOR ALEXA SKILL"
-app_id = "amzn1.ask.skill.XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-app_help_msg = "Helpful Message" 
+app_title = "Destiny Loadouts"
+app_id = "XXXXX.XXX.XXXXX.XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+app_help_msg = "You can ask me to save or equip your loadout for an activity. " \
+               "Or to equip a single item by name. " 
 main_domain = "https://www.bungie.net"
 api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-db_host = "XXXXXXXXXXXXX.XXXXXXXXXXXX.XXXXXXXXXX.rds.amazonaws.com"
-db_name_alexa = "XXXXXXXXXX"
-db_name_bungie = "XXXXXXXXXXXXXXXXXXX"
+db_host = "XXXXXXXXXXXXX.XXXXXXXXXXXX.us-east-1.rds.amazonaws.com"
+db_name_alexa = "alexa_destinyloadouts"
+db_name_bungie = "bungie_destiny_world_sql_content"
 db_user = "XXXXXXXXXXX"
 db_pass = "XXXXXXXXXXX"
 db_port = "5432"
@@ -31,7 +100,7 @@ db_port = "5432"
 def handler(event, context):
     print(print_linenumber(), "     FUNCTION : handler         : " + str(datetime.datetime.now()).split('.')[0])
     print(print_linenumber(), "              : handler                      : event                    : " + str(event))
-    print(print_linenumber(), "              : handler                      : context                  : " + str(context))
+    #print(print_linenumber(), "              : handler                      : context                  : " + str(context))
 
     global app_id
     global app_title
@@ -61,12 +130,14 @@ def handler(event, context):
     else:
         user_id = ""
 
-    if event['context']['System']['device']['deviceId']:
+    # print(print_linenumber(), "                      event : " + str(event))
+    
+    try: 
         device_id = event['context']['System']['device']['deviceId']
         print(print_linenumber(), "                  device_id : " + device_id)
-    else:
+    except:
         device_id = ""
-      
+
     if event['request']['type'] == "IntentRequest":
         print(print_linenumber(), "                    Request : IntentRequest")
         return on_intent(event['request']['intent'], auth_token)    
@@ -84,7 +155,7 @@ def handler(event, context):
         print(print_linenumber(), "                  requestId : " + session_ended_request['requestId'])
         print(print_linenumber(), "                  sessionId : " + session['sessionId'])
         print(print_linenumber(), "                    Session : Ended")
-        print(print_linenumber(), "on_session_ended requestId=" + session_ended_request['requestId'] + ", sessionId=" + session['sessionId'])
+        #print(print_linenumber(), "on_session_ended requestId=" + session_ended_request['requestId'] + ", sessionId=" + session['sessionId'])
         return
     else:
         print(print_linenumber(), "                    Request : Welcome (Default)")
@@ -109,103 +180,29 @@ def on_intent(intent, auth_token):
         print(print_linenumber(), "             intent['name'] : " + str(intent['name']))
 
     user_info = get_userinfo(auth_token)
+    print(print_linenumber(), "                  user_info : " + str(user_info))
+    
     try:
         if user_info['version'] == '1.0':
             return user_info
     except KeyError:
-
         character_zero_inventory, character_one_inventory, character_two_inventory, \
         vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault, bucket_hashes_subclass = get_character_inventories(auth_token, user_info['membership_type'], user_info['membership_id'])
     
-        print(print_linenumber(), "            vault_inventory : " + str(vault_inventory))
+        #print(print_linenumber(), "            vault_inventory : " + str(vault_inventory))
 
         exotics = get_all_exotics_in_game(auth_token)
 
-        equipped_items = get_character_equipped_items(auth_token, user_info['membership_type'], user_info['membership_id'], user_info['character_zero_id'], exotics, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory)
+        #equipped_items = get_character_equipped_items_old(auth_token, user_info['membership_type'], user_info['membership_id'], user_info['character_zero_id'], exotics, character_zero_inventory)
+        equipped_items = get_character_equipped_items(exotics, character_zero_inventory)
         
         print(print_linenumber(), "             equipped_items : " + str(equipped_items))
     
-        print(print_linenumber(), "   character_zero_inventory : " + str(character_zero_inventory))
-        print(print_linenumber(), "    character_one_inventory : " + str(character_one_inventory))
-        print(print_linenumber(), "    character_two_inventory : " + str(character_two_inventory))
-        print(print_linenumber(), "            vault_inventory : " + str(vault_inventory))
+        #print(print_linenumber(), "   character_zero_inventory : " + str(character_zero_inventory))
+        #print(print_linenumber(), "    character_one_inventory : " + str(character_one_inventory))
+        #print(print_linenumber(), "    character_two_inventory : " + str(character_two_inventory))
+        #print(print_linenumber(), "            vault_inventory : " + str(vault_inventory))
     
-        character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory = mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-        
-        print('Character Zero Full Buckets : ' + str(character_zero_inventory['bucketsFull']))
-        print( 'Character One Full Buckets : ' + str(character_one_inventory['bucketsFull']))
-        print(' Character Two Full Buckets : ' + str(character_two_inventory['bucketsFull']))
-        print(         'Vault Full Buckets : ' + str(vault_inventory['bucketsFull']))   
-    
-        if "Primary Weapons" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Primary Weapons")
-        if "Special Weapons" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Special Weapons")
-        if "Heavy Weapons" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Heavy Weapons")
-        if "Ghost" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Ghost")
-            
-        if "Helmet" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Helmet")
-        if "Gauntlets" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Gauntlets")
-        if "Chest Armor" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Chest Armor")
-        if "Leg Armor" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Leg Armor")
-        if "Class Armor" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Class Armor")
-        if "Artifacts" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Artifacts")
-
-        if "Emblems" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Emblems")
-        if "Shaders" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Shaders")
-        if "Emotes" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Emotes")
-        if "Ships" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Ships")
-        if "Vehicle" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Vehicle")
-        if "Sparrow Horn" in character_zero_inventory['bucketsFull']:
-            print(print_linenumber(), "       zero bucketsFull : Sparrow Horn")
-            
-        if "Weapons" in vault_inventory['bucketsFull']:
-            print(print_linenumber(), "      vault bucketsFull : Weapons")
-        if "Armor" in vault_inventory['bucketsFull']:
-            print(print_linenumber(), "      vault bucketsFull : Armor")
-        if "General" in vault_inventory['bucketsFull']:
-            print(print_linenumber(), "      vault bucketsFull : General")
-    
-        '''if 306958364 in character_inventory['itemHashes']:
-            index = character_inventory['itemHashes'].index(306958364)
-            print('Vision of Confluence is in Inventory')
-            print('      itemHash : ' + str(character_inventory['itemHashes'][index]))
-            print('        itemId : ' + str(character_inventory['itemIds'][index]))
-            print(' bucket_hashes : ' + str(character_inventory['bucket_hashes'][index]))
-            print('characterIndex : ' + str(character_inventory['characterIndices'][index]))
-            print('      quantity : ' + str(character_inventory['quantities'][index]))
-           
-            # ADEPT EXOTIC VERSION
-            it_is_exotic = is_it_an_exotic(1620583065, exotics)
-            if it_is_exotic:
-                print('        Exotic : YES ')
-            else:
-                print('        Exotic : NO ')    '''       
-            
-            #strings_match = do_strings_match("Atheon's Epilogue (Adept)", "atheons_epilogue_adept")
-            #SELECT json->>'itemName' AS itemName, json->>'itemHash' AS itemHash from DestinyInventoryItemDefinition 
-            #WHERE json->>'itemName' = E'Atheon\'s Epilogue (Adept)';
-            #-- atheons_epilogue_adept
-            #-- 2512322824
-            #if strings_match:
-            #    print('         Match : YES ')
-            #else:
-            #    print('         Match : NO ')
-            
-            
         if intent['name'] == "EquipEmblem":
             character_inventory = get_character_inventory(auth_token, membership_type, membership_id)
             
@@ -226,7 +223,9 @@ def on_intent(intent, auth_token):
                 print(print_linenumber(), "intent['slots']['LOADOUT']['name']  : " + str(intent['slots']['LOADOUT']['name']))
             if intent['slots']['LOADOUT']['value']:
                 print(print_linenumber(), "intent['slots']['LOADOUT']['value'] : " + str(intent['slots']['LOADOUT']['value']))
-        
+
+            character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory = mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
+            
             loadout_name = standardize_loadout_name(intent)
     
             timestamp = datetime.datetime.now()
@@ -257,11 +256,16 @@ def on_intent(intent, auth_token):
             if intent['slots']['LOADOUT']['value']:
                 print(print_linenumber(), "intent['slots']['LOADOUT']['value'] : " + str(intent['slots']['LOADOUT']['value']))
                 
-            loadout_name = standardize_loadout_name(intent)
-    
             timestamp = datetime.datetime.now()
+            try:
+                value = intent['slots']['FILTER']['value']
+            except:     
+                value = "NO_FILTER"
             
-            return save_loadout(user_info['display_name'], user_info['membership_id_bungie'], user_info['membership_type'], user_info['membership_id'], user_info['character_zero_id'], user_info['character_zero_race'], user_info['character_zero_gender'], user_info['character_zero_class'], loadout_name, equipped_items, timestamp)
+            loadout_name = standardize_loadout_name(intent)
+            if value == "subclass" or value == "sparrow" or value == "ship" or value == "shader" or value == "emote" or value == "emblem" or value == "ghost":
+                loadout_name = "FAVORITE" 
+            return save_loadout(user_info, loadout_name, equipped_items, value, timestamp)
         elif intent['name'] == "AMAZON.CancelIntent":
             card_title = "Cancelled request to " + app_title + "."
             speech = "Okay. Request cancelled."
@@ -340,15 +344,45 @@ def alexa_speak(card_title, speech, end_session):
     return json_data
 
 
-def call_api(url, api_key, auth_token, data="", method="GET"):
+def call_api(endpoint, auth_token, data="", method="GET"):
     print(print_linenumber(), "     FUNCTION : call_api                     : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              : call_api                     : url                      : " + str(url))
-    print(print_linenumber(), "              : call_api                     : api_key                  : " + str(api_key))
-    print(print_linenumber(), "              : call_api                     : auth_token               : " + str(auth_token))
+    print(print_linenumber(), "              : call_api                     : endpoint                      : " + str(endpoint))
+    #print(print_linenumber(), "              : call_api                     : api_key                  : " + str(api_key))
+    #print(print_linenumber(), "              : call_api                     : auth_token               : " + str(auth_token))
 
+    global main_domain
+    global api_key
+
+    if endpoint == "get_character_ids":
+        membership_type = data['membershipType']
+        membership_id = data['membershipId']
+        url = main_domain + "/D1/Platform/Destiny/" + str(membership_type) + "/Account/" + str(membership_id) + "/"
+    elif endpoint == "get_userinfo":
+        url = main_domain + "/Platform/User/GetMembershipsForCurrentUser/"
+    elif endpoint == "get_all_exotics_in_game":
+        url = main_domain + "/D1/Platform/Destiny/Explorer/Items/?count=500&rarity=Exotic"
+    elif endpoint == "account_inventory_from_api":
+        membership_type = data['membershipType']
+        membership_id = data['membershipId']
+        url = main_domain + "/D1/Platform/Destiny/" + str(membership_type) + "/Account/" + str(membership_id) + "/Items/"
+    elif endpoint == "vault_inventory_from_api":
+        membership_type = data['membershipType']
+        url = main_domain + "/D1/Platform/Destiny/" + str(membership_type) + "/MyAccount/Vault/Summary/?definitions=true"
+    elif endpoint == "transfer_item":
+        url = main_domain + "/D1/Platform/Destiny/TransferItem/"
+    elif endpoint == "equip_items":
+        url = main_domain + "/D1/Platform/Destiny/EquipItems/"
+    else:
+        print(print_linenumber(), "                      ERROR : Unknown API Endpoint.")
+        card_title = app_title + " : ERROR : Unknown API Endpoint."
+        speech = "ERROR: Unknown API Endpoint. " \
+               + "It appears Bungie's network is undergoing maintenace, please try again later."
+        end_session = True
+        return alexa_speak(card_title, speech, end_session)        
+        
     if data:
         print(print_linenumber(), "              : call_api                     : data                     : " + str(data)) 
-        print(print_linenumber(), "              : call_api                     : method                   : " + str(method)) 
+        #print(print_linenumber(), "              : call_api                     : method                   : " + str(method)) 
         
     connection_code = 200
     
@@ -356,10 +390,8 @@ def call_api(url, api_key, auth_token, data="", method="GET"):
     opener = urllib2.build_opener(handler)
     
     if method == "POST":
-        #data = urllib.urlencode(json.loads(json_data))
         request = urllib2.Request(url, data=data)
-        print(print_linenumber(), "                               data : " + str(data))
-        #data : itemId=6917529130345955914&itemReferenceHash=1569892242&membershipType=2&transferToVault=true&stackSize=1&characterId=2305843009217357501
+        #print(print_linenumber(), "                               data : " + str(data))
     else:
         request = urllib2.Request(url)
         
@@ -369,11 +401,6 @@ def call_api(url, api_key, auth_token, data="", method="GET"):
 
     request.get_method = lambda: method
 
-    #try:
-    #    response = urllib2.urlopen(request)
-    #except urllib2.HTTPError, e:
-    #    if e.code == 401:
-    
     try:
         connection = opener.open(request)
     except urllib2.HTTPError,e:
@@ -385,63 +412,63 @@ def call_api(url, api_key, auth_token, data="", method="GET"):
     elif connection_code == 401:
         print(print_linenumber(), "                              ERROR : HTTP 401 Unauthorized.")
         card_title = app_title + " : ERROR : HTTP 401 Unauthorized."
-        speech = "ERROR. H. T. T. P. four oh one.  Unauthorized. " \
+        speech = "ERROR: 401: Unauthorized. " \
                + "Please ensure this skill is 'Approved' to connect to your Bungie account."
         end_session = True
         return alexa_speak(card_title, speech, end_session)
     elif connection_code == 403:
         print(print_linenumber(), "                              ERROR : HTTP 403 Forbidden.")
         card_title = app_title + " : ERROR : HTTP 403 Forbidden."
-        speech = "ERROR. H. T. T. P. four oh three.  Forbidden. " \
+        speech = "ERROR: 403: Forbidden. " \
                + "It appears Bungie's network is undergoing maintenace, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)
     elif connection_code == 404:
         print(print_linenumber(), "                      ERROR : HTTP 404 Not Found.")
         card_title = app_title + " : ERROR : HTTP 404 Not Found."
-        speech = "ERROR. H. T. T. P. four oh four.  Not Found. " \
+        speech = "ERROR: 404: Not Found. " \
                + "It appears Bungie's network is undergoing maintenace, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)
     elif connection_code == 429:
         print(print_linenumber(), "                      ERROR : HTTP 429 Too Many Requests.")
         card_title = app_title + " : ERROR : HTTP 429 Too Many Requests."
-        speech = "ERROR. H. T. T. P. four twenty nine.  Too Many Requests. " \
+        speech = "ERROR: 429:  Too Many Requests. " \
                + "Bungie's servers are rejecting new connections from this app at this time, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)      
     elif connection_code == 500:
         print(print_linenumber(), "                      ERROR : HTTP 500 Internal Server Error.")
         card_title = app_title + " : ERROR : HTTP 500 Internal Server Error."
-        speech = "ERROR. H. T. T. P. five hundred.  Internal Server Error. " \
+        speech = "ERROR: 500:  Internal Server Error. " \
                + "It appears Bungie's network is undergoing maintenace, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)
     elif connection_code == 502:
         print(print_linenumber(), "                      ERROR : HTTP 502 Bad Gateway.")
         card_title = app_title + " : ERROR : HTTP 502 Bad Gateway."
-        speech = "ERROR. H. T. T. P. five oh two.  Bad Gateway. " \
+        speech = "ERROR: 502:  Bad Gateway. " \
                + "It appears Bungie's network is undergoing maintenace, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)
     elif connection_code == 503:
         print(print_linenumber(), "                      ERROR : HTTP 503 Service Unavailable.")
         card_title = app_title + " : ERROR : HTTP 503 Service Unavailable."
-        speech = "ERROR. H. T. T. P. five oh three. Service Unavailable. " \
+        speech = "ERROR: 503: Service Unavailable. " \
                + "I am having trouble connecting to Destiny's network, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)            
     elif connection_code == 504:
         print(print_linenumber(), "                      ERROR : HTTP 504 Gateway Timeout.")
         card_title = app_title + " : ERROR : HTTP 504 Gateway Timeout."
-        speech = "ERROR. H. T. T. P. five oh four. Gateway Timeout. " \
+        speech = "ERROR: 504: Gateway Timeout. " \
                + "It appears Bungie's network is undergoing maintenace, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)            
     else:
         print(print_linenumber(), "                      ERROR : HTTP " + str(connection_code))
         card_title = app_title + " : ERROR : HTTP " + str(connection_code) + "."
-        speech = "ERROR. H. T. T. P. Error Unknown." \
+        speech = "ERROR: HTTP: Unknown." \
                + "It appears Bungie's network is undergoing maintenace, please try again later."
         end_session = True
         return alexa_speak(card_title, speech, end_session)    
@@ -450,8 +477,9 @@ def call_api(url, api_key, auth_token, data="", method="GET"):
         print(print_linenumber(), "                      ERROR : Bungie User API Code: 217 : Retrying...")
         time.sleep(3)
         print(response_json)
-        response_json = call_api(url, api_key, auth_token)
+        response_json = call_api(endpoint, auth_token)
 
+    print(print_linenumber(), "              response_json : " + str(response_json)) 
     return response_json
     
     
@@ -472,10 +500,11 @@ def query_bungie_db(sql):
     cur = conn.cursor()
     cur.execute(sql)
     query_results = cur.fetchall()
+    print(print_linenumber(), "                      query_results : " + str(query_results))
+    
     cur.close()
     conn.close()
 
-    print(print_linenumber(), "                      query_results : " + str(query_results))
     return query_results
 
 
@@ -503,178 +532,284 @@ def query_alexa_db(sql):
     print(print_linenumber(), "                      query_results : " + str(query_results))
     return query_results
     
+
+def get_character_ids(auth_token, item):
+    print(print_linenumber(), "     FUNCTION : get_character_ids : " + str(datetime.datetime.now()).split('.')[0])
+    print(print_linenumber(), "              : get_character_ids                 : auth_token               : " + str(auth_token))
+    print(print_linenumber(), "              : get_character_ids                 : item                     : " + str(item))
+
+    character_lastplayed = 0
+    
+    membership_type = item['membershipType']
+    membership_id = item['membershipId']
+    
+    print(print_linenumber(), "                    membership_type : " + str(membership_type))
+    print(print_linenumber(), "                      membership_id : " + str(membership_id))
+    # GetBungieAccount is deprecated...  check out GetDestinyProfile after D2 Launch
+    endpoint = "get_character_ids"
+    get_bungie_account = call_api(endpoint, auth_token, item)
+    print(print_linenumber(), "         get_bungie_account : " + str(get_bungie_account))
+
+    try:
+        player_account = get_bungie_account['Response']['data']['characters']
+    except:
+        return get_bungie_account
+
+    print(print_linenumber(), "             player_account : " + str(player_account))        
+    for index, item in enumerate(get_bungie_account['Response']['data']['characters']):
+        print(print_linenumber(), "                               item : " + str(item))
+        if item['characterBase']['membershipId'] == membership_id:
+            if index == 0:
+                try:
+                    character_lastplayed = item['characterBase']['dateLastPlayed']
+                    character_zero_id = item['characterBase']['characterId']
+                    character_zero_race = item['characterBase']['raceHash']
+                    character_zero_gender = item['characterBase']['genderHash']
+                    character_zero_class = item['characterBase']['classHash']
+                except: 
+                    character_lastplayed = datetime.datetime.now().split('.')[0]
+                    character_zero_id = 254
+                    character_zero_race = 254
+                    character_zero_gender = 254
+                    character_zero_class = 254
+            elif index == 1:
+                try:    
+                    character_one_id = item['characterBase']['characterId']
+                    character_one_race = item['characterBase']['raceHash']
+                    character_one_gender = item['characterBase']['genderHash']
+                    character_one_class = item['characterBase']['classHash']
+                except:
+                    character_one_id = 254
+                    character_one_race = 254
+                    character_one_gender = 254
+                    character_one_class = 254
+            elif index == 2:    
+                try:
+                    character_two_id = item['characterBase']['characterId']
+                    character_two_race = item['characterBase']['raceHash']
+                    character_two_gender = item['characterBase']['genderHash']
+                    character_two_class = item['characterBase']['classHash']
+                except:
+                    character_two_id = 254
+                    character_two_race = 254
+                    character_two_gender = 254
+                    character_two_class = 254
+
+    print(print_linenumber(), "                      membership_id : " + str(membership_id)) 
+    print(print_linenumber(), "                    membership_type : " + str(membership_type)) 
+    print(print_linenumber(), "               character_lastplayed : " + str(character_lastplayed)) 
+    print(print_linenumber(), "                  character_zero_id : " + str(character_zero_id)) 
+    print(print_linenumber(), "                character_zero_race : " + str(character_zero_race)) 
+    print(print_linenumber(), "              character_zero_gender : " + str(character_zero_gender)) 
+    print(print_linenumber(), "               character_zero_class : " + str(character_zero_class)) 
+    print(print_linenumber(), "                   character_one_id : " + str(character_one_id)) 
+    print(print_linenumber(), "                 character_one_race : " + str(character_one_race)) 
+    print(print_linenumber(), "               character_one_gender : " + str(character_one_gender)) 
+    print(print_linenumber(), "                character_one_class : " + str(character_one_class)) 
+    print(print_linenumber(), "                   character_two_id : " + str(character_two_id)) 
+    print(print_linenumber(), "                 character_two_race : " + str(character_two_race)) 
+    print(print_linenumber(), "               character_two_gender : " + str(character_two_gender)) 
+    print(print_linenumber(), "                character_two_class : " + str(character_two_class)) 
+    
+    return membership_id, membership_type, character_lastplayed, character_zero_id, character_zero_race, character_zero_gender, character_zero_class, character_one_id, character_one_race, character_one_gender, character_one_class, character_two_id, character_two_race, character_two_gender, character_two_class
+        
     
 def get_userinfo(auth_token):
     print(print_linenumber(), "     FUNCTION : get_userinfo : " + str(datetime.datetime.now()).split('.')[0])
     print(print_linenumber(), "              : get_userinfo                 : auth_token               : " + str(auth_token))
 
-    global main_domain
-    global api_key
-    
     character_lastplayed_xbox = 0
     character_lastplayed_psn = 0
     character_lastplayed_pc = 0
     
-    url = main_domain + "/Platform/User/GetMembershipsForCurrentUser/"
-    
-    get_memberships_for_currentuser = call_api(url, api_key, auth_token)
+    endpoint = "get_userinfo"
+    get_memberships_for_currentuser = call_api(endpoint, auth_token)
     try:
-        if get_memberships_for_currentuser['version'] == '1.0':
-            return get_memberships_for_currentuser
-    except KeyError:
-        print(print_linenumber(), "    get_memberships_for_currentuser : " + str(get_memberships_for_currentuser))   
-    
         membership_id_bungie = get_memberships_for_currentuser['Response']['bungieNetUser']['membershipId']
-    
+        print(print_linenumber(), "    get_memberships_for_currentuser : " + str(get_memberships_for_currentuser))  
         display_name = get_memberships_for_currentuser['Response']['bungieNetUser']['displayName']
         print(print_linenumber(), "               membership_id_bungie : " + membership_id_bungie)
         print(print_linenumber(), "                       display_name : " + display_name)  
+    except:
+        return get_memberships_for_currentuser
+
+    for index, item in enumerate(get_memberships_for_currentuser['Response']['destinyMemberships']):
+        #print(print_linenumber(), "                               item : " + str(item))  
+        if item['membershipType'] == 1:
+            try:
+                membership_id_xbox, membership_type_xbox, character_lastplayed_xbox, character_zero_id_xbox, character_zero_race_xbox, character_zero_gender_xbox, character_zero_class_xbox, character_one_id_xbox, character_one_race_xbox, character_one_gender_xbox, character_one_class_xbox, character_two_id_xbox, character_two_race_xbox, character_two_gender_xbox, character_two_class_xbox = get_character_ids(auth_token, item)
+            except:
+                return get_character_ids(auth_token, item)
+        elif item['membershipType'] == 2:
+            try:
+                membership_id_psn, membership_type_psn, character_lastplayed_psn, character_zero_id_psn, character_zero_race_psn, character_zero_gender_psn, character_zero_class_psn, character_one_id_psn, character_one_race_psn, character_one_gender_psn, character_one_class_psn, character_two_id_psn, character_two_race_psn, character_two_gender_psn, character_two_class_psn = get_character_ids(auth_token, item)
+            except:
+                return get_character_ids(auth_token, item)
+        elif item['membershipType'] == 4:
+            try:
+                membership_id_pc, membership_type_pc, character_lastplayed_pc, character_zero_id_pc, character_zero_race_pc, character_zero_gender_pc, character_zero_class_pc, character_one_id_pc, character_one_race_pc, character_one_gender_pc, character_one_class_pc, character_two_id_pc, character_two_race_pc, character_two_gender_pc, character_two_class_pc = get_character_ids(auth_token, item)
+            except:
+                return get_character_ids(auth_token, item)
+
+        if (character_lastplayed_xbox > character_lastplayed_psn) and (character_lastplayed_xbox > character_lastplayed_pc):
+            membership_type = 1
+            membership_id = membership_id_xbox
+            character_zero_id = character_zero_id_xbox
+            character_one_id = character_one_id_xbox
+            character_two_id = character_two_id_xbox
+            character_zero_race = character_zero_race_xbox
+            character_zero_gender = character_zero_gender_xbox
+            character_zero_class = character_zero_class_xbox
+            character_one_race = character_zero_race_xbox
+            character_one_gender = character_zero_gender_xbox
+            character_one_class = character_zero_class_xbox
+            character_two_race = character_zero_race_xbox
+            character_two_gender = character_zero_gender_xbox
+            character_two_class = character_zero_class_xbox
+        elif (character_lastplayed_psn > character_lastplayed_xbox) and (character_lastplayed_psn > character_lastplayed_pc):
+            membership_type = 2
+            membership_id = membership_id_psn
+            character_zero_id = character_zero_id_psn
+            character_one_id = character_one_id_psn
+            character_two_id = character_two_id_psn
+            character_zero_race = character_zero_race_psn
+            character_zero_gender = character_zero_gender_psn
+            character_zero_class = character_zero_class_psn
+            character_one_race = character_zero_race_psn
+            character_one_gender = character_zero_gender_psn
+            character_one_class = character_zero_class_psn
+            character_two_race = character_zero_race_psn
+            character_two_gender = character_zero_gender_psn
+            character_two_class = character_zero_class_psn
+        elif (character_lastplayed_pc > character_lastplayed_psn) and (character_lastplayed_pc > character_lastplayed_xbox):
+            membership_type = 4
+            membership_id = membership_id_pc
+            character_zero_id = character_zero_id_pc
+            character_one_id = character_one_id_pc
+            character_two_id = character_two_id_pc
+            character_zero_race = character_zero_race_pc
+            character_zero_gender = character_zero_gender_pc
+            character_zero_class = character_zero_class_pc
+            character_one_race = character_zero_race_pc
+            character_one_gender = character_zero_gender_pc
+            character_one_class = character_zero_class_pc
+            character_two_race = character_zero_race_pc
+            character_two_gender = character_zero_gender_pc
+            character_two_class = character_zero_class_pc
+        else:
+            print(print_linenumber(), "                              ERROR : Could not determine which platform last played on.")
+            card_title = app_title + " : ERROR : You've never played Destiny?"
+            speech = "I am having trouble finding a character you've played in Destiny the Game. " \
+                   + "Please play Destiny and create a character before using this app." \
+                   + "This app must be approved on Bungie dot net, and your Bungie dot net account " \
+                   + "must be linked to your Destiny account."
+            end_session = True
+            return alexa_speak(card_title, speech, end_session)
+            
+        # RACE 0 = HUMAN, 1 = AWOKEN, 2 = EXO
+        # GENDER 0 = MALE, 1 = FEMALE
+        # CLASS 0 = TITAN, 1 = HUNTER, 2 = WARLOCK
         
-        for index, item in enumerate(get_memberships_for_currentuser['Response']['destinyMemberships']):
-            print(print_linenumber(), "                               item : " + str(item))  
-            if item['membershipType'] == 1:
-                membership_id_xbox = item['membershipId']
-                print(print_linenumber(), "                 membership_id_xbox : " + membership_id_xbox)
-                url = main_domain + "/Platform/User/GetBungieAccount/" + membership_id_xbox + "/1/"
-                get_bungie_account_xbox = call_api(url, api_key, auth_token)
-                for index_b, item_b in enumerate(get_bungie_account_xbox['Response']['destinyAccounts']):
-                    if item_b['userInfo']['membershipId'] == membership_id_xbox:
-                        character_zero_id_xbox = item_b['characters'][0]['characterId']
-                        character_one_id_xbox = item_b['characters'][1]['characterId']
-                        character_two_id_xbox = item_b['characters'][2]['characterId']
-                        character_lastplayed_xbox = item_b['characters'][0]['dateLastPlayed']
-                        character_zero_race_xbox = item_b['characters'][0]['race']['raceType']
-                        character_zero_gender_xbox = item_b['characters'][0]['genderType']
-                        character_zero_class_xbox = item_b['characters'][0]['characterClass']['classType']
-                        character_one_race_psn = item_b['characters'][1]['race']['raceType']
-                        character_one_gender_xbox = item_b['characters'][1]['genderType']
-                        character_one_class_xbox = item_b['characters'][1]['characterClass']['classType']
-                        character_two_race_xbox = item_b['characters'][2]['race']['raceType']
-                        character_two_gender_xbox = item_b['characters'][2]['genderType']
-                        character_two_class_xbox = item_b['characters'][2]['characterClass']['classType']
-                        
-            elif item['membershipType'] == 2:
-                membership_id_psn = item['membershipId']
-                print(print_linenumber(), "                  membership_id_psn : " + membership_id_psn)
-                url = main_domain + "/Platform/User/GetBungieAccount/" + membership_id_psn + "/2/"
-                get_bungie_account_psn = call_api(url, api_key, auth_token)
-                for index_b, item_b in enumerate(get_bungie_account_psn['Response']['destinyAccounts']):
-                    if item_b['userInfo']['membershipId'] == membership_id_psn:
-                        character_zero_id_psn = item_b['characters'][0]['characterId']
-                        character_one_id_psn = item_b['characters'][1]['characterId']
-                        character_two_id_psn = item_b['characters'][2]['characterId']
-                        character_lastplayed_psn = item_b['characters'][0]['dateLastPlayed']
-                        character_zero_race_psn = item_b['characters'][0]['race']['raceType']
-                        character_zero_gender_psn = item_b['characters'][0]['genderType']
-                        character_zero_class_psn = item_b['characters'][0]['characterClass']['classType']
-                        character_one_race_psn = item_b['characters'][1]['race']['raceType']
-                        character_one_gender_psn = item_b['characters'][1]['genderType']
-                        character_one_class_psn = item_b['characters'][1]['characterClass']['classType']
-                        character_two_race_psn = item_b['characters'][2]['race']['raceType']
-                        character_two_gender_psn = item_b['characters'][2]['genderType']
-                        character_two_class_psn = item_b['characters'][2]['characterClass']['classType']              
-                        
-            elif item['membershipType'] == 4:
-                membership_id_pc = item['membershipId']
-                print(print_linenumber(), "                   membership_id_pc : " + membership_id_pc)
-                url = main_domain + "/Platform/User/GetBungieAccount/" + membership_id_pc + "/4/"
-                get_bungie_account_psn = call_api(url, api_key, auth_token)
-                for index_b, item_b in enumerate(get_bungie_account_psn['Response']['destinyAccounts']):
-                    if item_b['userInfo']['membershipId'] == membership_id_pc:
-                        character_zero_id_pc = item_b['characters'][0]['characterId']
-                        character_one_id_pc = item_b['characters'][1]['characterId']
-                        character_two_id_pc = item_b['characters'][2]['characterId']
-                        character_lastplayed_pc = item_b['characters'][0]['dateLastPlayed']
-                        character_zero_race_pc = item_b['characters'][0]['race']['raceType']
-                        character_zero_gender_pc = item_b['characters'][0]['genderType']
-                        character_zero_class_pc = item_b['characters'][0]['characterClass']['classType']
-                        character_one_race_pc = item_b['characters'][1]['race']['raceType']
-                        character_one_gender_pc = item_b['characters'][1]['genderType']
-                        character_one_class_pc = item_b['characters'][1]['characterClass']['classType']
-                        character_two_race_pc = item_b['characters'][2]['race']['raceType']
-                        character_two_gender_pc = item_b['characters'][2]['genderType']
-                        character_two_class_pc = item_b['characters'][2]['characterClass']['classType']
-                        
-            if (character_lastplayed_xbox > character_lastplayed_psn) and (character_lastplayed_xbox > character_lastplayed_pc):
-                membership_type = 1
-                membership_id = membership_id_xbox
-                character_zero_id = character_zero_id_xbox
-                character_one_id = character_one_id_xbox
-                character_two_id = character_two_id_xbox
-                character_zero_race = character_zero_race_xbox
-                character_zero_gender = character_zero_gender_xbox
-                character_zero_class = character_zero_class_xbox
-                character_one_race = character_zero_race_xbox
-                character_one_gender = character_zero_gender_xbox
-                character_one_class = character_zero_class_xbox
-                character_two_race = character_zero_race_xbox
-                character_two_gender = character_zero_gender_xbox
-                character_two_class = character_zero_class_xbox
-            elif (character_lastplayed_psn > character_lastplayed_xbox) and (character_lastplayed_psn > character_lastplayed_pc):
-                membership_type = 2
-                membership_id = membership_id_psn
-                character_zero_id = character_zero_id_psn
-                character_one_id = character_one_id_psn
-                character_two_id = character_two_id_psn
-                character_zero_race = character_zero_race_psn
-                character_zero_gender = character_zero_gender_psn
-                character_zero_class = character_zero_class_psn
-                character_one_race = character_zero_race_psn
-                character_one_gender = character_zero_gender_psn
-                character_one_class = character_zero_class_psn
-                character_two_race = character_zero_race_psn
-                character_two_gender = character_zero_gender_psn
-                character_two_class = character_zero_class_psn
-            elif (character_lastplayed_pc > character_lastplayed_psn) and (character_lastplayed_pc > character_lastplayed_xbox):
-                membership_type = 4
-                membership_id = membership_id_pc
-                character_zero_id = character_zero_id_pc
-                character_one_id = character_one_id_pc
-                character_two_id = character_two_id_pc
-                character_zero_race = character_zero_race_pc
-                character_zero_gender = character_zero_gender_pc
-                character_zero_class = character_zero_class_pc
-                character_one_race = character_zero_race_pc
-                character_one_gender = character_zero_gender_pc
-                character_one_class = character_zero_class_pc
-                character_two_race = character_zero_race_pc
-                character_two_gender = character_zero_gender_pc
-                character_two_class = character_zero_class_pc
-            else:
-                print(print_linenumber(), "                              ERROR : Could not determine which platform last played on.")
-                card_title = app_title + " : ERROR : You've never played Destiny?"
-                speech = "I am having trouble finding a character you've played in Destiny the Game. " \
-                       + "Please play Destiny and create a character before using this app." \
-                       + "This app must be approved on Bungie dot net, and your Bungie dot net account " \
-                       + "must be linked to your Destiny account."
-                end_session = True
-                return alexa_speak(card_title, speech, end_session)
-                
-            # RACE 0 = HUMAN, 1 = AWOKEN, 2 = EXO
-            # GENDER 0 = MALE, 1 = FEMALE
-            # CLASS 0 = TITAN, 1 = HUNTER, 2 = WARLOCK
-    
-            user_info = {}
-            user_info = {'display_name': display_name, 'membership_id_bungie': membership_id_bungie, \
-            'membership_type': membership_type, 'membership_id': membership_id, \
-            'character_zero_id': character_zero_id, 'character_zero_race': character_zero_race, \
-            'character_zero_gender': character_zero_gender, 'character_zero_class': character_zero_class, \
-            'character_one_id': character_one_id, 'character_one_race': character_one_race, \
-            'character_one_gender': character_one_gender, 'character_one_class': character_one_class, \
-            'character_two_id': character_two_id, 'character_two_race': character_two_race, \
-            'character_two_gender': character_two_gender, 'character_two_class': character_two_class }
-    
-            return user_info
+        # character_zero_id : 2305843009217357501   Titan
+        # character_one_id : 2305843009229770259    Warlock
+        # character_two_id : 2305843009314496397    Hunter
 
-def itemName_from_itemHash(hash):
-    print(print_linenumber(), "     FUNCTION : itemName_from_itemHash : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              : itemName_from_itemHash       : hash                     : " + str(hash))    
+        # "raceHash": 2803282938,   (Awoken)
+        # "genderHash": 3111576190, (Male)
+        # "classHash": 3655393761,  (Titan)
+        # "raceHash": 3887404748,   (Human)
+        # "genderHash": 2204441813, (Female)
+        # "classHash": 2271682572,  (Warlock)
+        # "raceHash": 3887404748,   (Human)
+        # "genderHash": 3111576190, (Male)
+        # "classHash": 671679327,   (Hunter)
 
-    sql = "SELECT json->>'itemName' AS itemName from DestinyInventoryItemDefinition WHERE json->>'itemHash' = '" + hash + "';"
-    item_name = query_bungie_db(sql)[0]
-    item_name = item_name[0]
-    print(print_linenumber(), "                          item_name : " + str(item_name)) 
-    return str(item_name)
+        '''# This is temporary workaround, until D2 launches, don't know hashes for race, gender, and class
+        # value "2803282938" is out of range for type smallint (DB column is setup as smallint)
+        # Basically change in D2 API Endpoint caused race, gender, class values to change to hash instead of int, 
+        # which is too big to fit in DB column.  
+        # Ultimately, need to remove this conversion and redo DB schema to store hash instead of smallint.
+        if character_zero_race == 3887404748:
+            character_zero_race = 0
+        elif character_zero_race == 2803282938:
+            character_zero_race = 1
+        else:
+            character_zero_race = 2
+            
+        if character_one_race == 3887404748:
+            character_one_race = 0
+        elif character_one_race == 2803282938:
+            character_one_race = 1
+        else:
+            character_one_race = 2   
+            
+        if character_two_race == 3887404748:
+            character_two_race = 0
+        elif character_two_race == 2803282938:
+            character_two_race = 1
+        else:
+            character_two_race = 2    
+            
+        if character_zero_gender == 3111576190:
+            character_zero_gender = 0
+        else:
+            character_zero_gender = 1
+            
+        if character_one_gender == 3111576190:
+            character_one_gender = 0
+        else:
+            character_one_gender = 1  
+            
+        if character_two_gender == 3111576190:
+            character_two_gender = 0
+        else:
+            character_two_gender = 1  
+            
+        if character_zero_class == 3655393761:
+            character_zero_class = 0
+        elif character_zero_class == 671679327:
+            character_zero_class = 1
+        else:
+            character_zero_class = 2
+            
+        if character_one_class == 3655393761:
+            character_one_class = 0
+        elif character_one_class == 671679327:
+            character_one_class = 1
+        else:
+            character_one_class = 2
+            
+        if character_two_class == 3655393761:
+            character_two_class = 0
+        elif character_two_class == 671679327:
+            character_two_class = 1
+        else:
+            character_two_class = 2'''
+            
+        print(print_linenumber(), "                  character_zero_id : " + str(character_zero_id))
+        print(print_linenumber(), "                character_zero_race : " + str(character_zero_race))
+        print(print_linenumber(), "              character_zero_gender : " + str(character_zero_gender))
+        print(print_linenumber(), "               character_zero_class : " + str(character_zero_class))
+        print(print_linenumber(), "                   character_one_id : " + str(character_one_id))
+        print(print_linenumber(), "                 character_one_race : " + str(character_one_race))
+        print(print_linenumber(), "               character_one_gender : " + str(character_one_gender))
+        print(print_linenumber(), "                character_one_class : " + str(character_one_class))
+        print(print_linenumber(), "                   character_two_id : " + str(character_two_id))
+        print(print_linenumber(), "                 character_two_race : " + str(character_two_race))
+        print(print_linenumber(), "               character_two_gender : " + str(character_two_gender))
+        print(print_linenumber(), "                character_two_class : " + str(character_two_class))
+
+        user_info = {}
+        user_info = {'display_name': display_name, 'membership_id_bungie': membership_id_bungie, \
+        'membership_type': membership_type, 'membership_id': membership_id, \
+        'character_zero_id': character_zero_id, 'character_zero_race': character_zero_race, \
+        'character_zero_gender': character_zero_gender, 'character_zero_class': character_zero_class, \
+        'character_one_id': character_one_id, 'character_one_race': character_one_race, \
+        'character_one_gender': character_one_gender, 'character_one_class': character_one_class, \
+        'character_two_id': character_two_id, 'character_two_race': character_two_race, \
+        'character_two_gender': character_two_gender, 'character_two_class': character_two_class }
+
+        return user_info
 
 
 def find_item_location(user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, itemId = 0, itemHash = 0, ):
@@ -699,75 +834,18 @@ def find_item_location(user_info, character_zero_inventory, character_one_invent
     if itemHash <> 0 and itemId == "NOT_FOUND":
         if int(itemHash) in character_zero_inventory['itemHashes']:
             location_id = user_info['character_zero_id']
-            #itemId = itemId_from_itemHash(itemHash, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory)
         elif int(itemHash) in character_one_inventory['itemHashes']:
             location_id = user_info['character_one_id']
-            #itemId = itemId_from_itemHash(itemHash, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory)
         elif int(itemHash) in character_two_inventory['itemHashes']:
             location_id = user_info['character_two_id']
-            #itemId = itemId_from_itemHash(itemHash, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory)
         elif int(itemHash) in vault_inventory['itemHashes']:
             location_id = -1
-            #itemId = itemId_from_itemHash(itemHash, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory)
         else:
             print(print_linenumber(), "                             WARNING: find_item_location failed.  Item probably deleted since loadout was saved.")
+            location_id = 0
             
-    return int(location_id)
+    return str(location_id)
 
- 
-def itemId_from_itemHash(itemHash, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory):
-    #print(print_linenumber(), "     FUNCTION : itemId_from_itemHash : " + str(datetime.datetime.now()).split('.')[0])
-    #print(print_linenumber(), "              : itemId_from_itemHash         : itemHash                 : " + str(itemHash))    
-    #print(print_linenumber(), "              : itemId_from_itemHash         : character_zero_inventory : " + str(character_zero_inventory))  
-    #print(print_linenumber(), "              : itemId_from_itemHash         : character_one_inventory  : " + str(character_one_inventory))  
-    #print(print_linenumber(), "              : itemId_from_itemHash         : character_two_inventory  : " + str(character_two_inventory))  
-    #print(print_linenumber(), "              : itemId_from_itemHash         : vault_inventory          : " + str(vault_inventory))  
-
-    itemId = ""
-    try:
-        itemId = character_zero_inventory['itemIds'][character_zero_inventory['itemHashes'].index(itemHash)]
-    except ValueError:
-        try:
-            itemId = character_one_inventory['itemIds'][character_one_inventory['itemHashes'].index(itemHash)]
-        except ValueError:
-            try:
-                itemId = character_two_inventory['itemIds'][character_two_inventory['itemHashes'].index(itemHash)]
-            except ValueError:
-                try: 
-                    itemId = vault_inventory['itemIds'][vault_inventory['itemHashes'].index(itemHash)]
-                except ValueError:
-                    print(print_linenumber(), " itemId : Not Found, probably a subclass or something like that.")
-                    itemId = -1
-    print(print_linenumber(), "                             itemId : " + str(itemId))
-    return int(itemId)
-    
-
-def bucket_hash_from_itemHash(itemHash, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory):
-    #print(print_linenumber(), "     FUNCTION : bucket_hash_from_itemHash    : " + str(datetime.datetime.now()).split('.')[0])
-    #print(print_linenumber(), "              : bucket_hash_from_itemHash    : itemHash                 : " + str(itemHash))    
-    #print(print_linenumber(), "              : bucket_hash_from_itemHash    : character_zero_inventory : " + str(character_zero_inventory))    
-    #print(print_linenumber(), "              : bucket_hash_from_itemHash    : character_one_inventory  : " + str(character_one_inventory))    
-    #print(print_linenumber(), "              : bucket_hash_from_itemHash    : character_two_inventory  : " + str(character_two_inventory))    
-    #print(print_linenumber(), "              : bucket_hash_from_itemHash    : vault_inventory          : " + str(vault_inventory))    
-
-    bucket_hash = ""
-    try:
-        bucket_hash = character_zero_inventory['bucket_hashes'][character_zero_inventory['itemHashes'].index(itemHash)]
-    except ValueError:
-        try:
-            bucket_hash = character_one_inventory['bucket_hashes'][character_one_inventory['itemHashes'].index(itemHash)]
-        except ValueError:
-            try:
-                bucket_hash = character_two_inventory['bucket_hashes'][character_two_inventory['itemHashes'].index(itemHash)]
-            except ValueError:
-                try: 
-                    bucket_hash = vault_inventory['bucket_hashes'][vault_inventory['itemHashes'].index(itemHash)]
-                except ValueError:
-                    print(print_linenumber(), " bucket_hash : Not Found, probably a subclass or something like that.")
-                    bucket_hash = -1
-    print(print_linenumber(), "                             bucket_hash : " + str(bucket_hash))
-    return int(bucket_hash)
-    
 
 def do_strings_match(string_from_db, string_from_user):
     print(print_linenumber(), "     FUNCTION :    do_strings_match : " + str(datetime.datetime.now()).split('.')[0])
@@ -801,27 +879,20 @@ def do_strings_match(string_from_db, string_from_user):
         return 0
 
 
-def item_hash_from_name(name):
-    print(print_linenumber(), "     FUNCTION : item_hash_from_name : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              : item_hash_from_name          : name                     : " + str(name))    
-    
-    sql = "SELECT json->>'itemHash' AS itemHash from DestinyInventoryItemDefinition WHERE json->>'itemName' = '" + name + "';"
-    item_hash = query_bungie_db(sql)[0]
-    item_hash = item_hash[0]
- 
-    print(print_linenumber(), "                          item_hash : " + str(item_hash)) 
-    return str(item_hash)
-    
-    
 def get_all_exotics_in_game(auth_token):
     print(print_linenumber(), "     FUNCTION :      get_all_exotics : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              :      get_all_exotics         : auth_token               : " + str(auth_token))
-     
-    global main_domain
-    global api_key      
-    
-    url = main_domain + "/Platform/Destiny/Explorer/Items/?count=500&rarity=Exotic"
-    exotics = call_api(url, api_key, auth_token)['Response']['data']['itemHashes']
+    #print(print_linenumber(), "              :      get_all_exotics         : auth_token               : " + str(auth_token))
+
+    endpoint = "get_all_exotics_in_game"
+    #exotics = call_api(endpoint, auth_token)['Response']['data']['itemHashes']
+    exotics = call_api(endpoint, auth_token)
+
+    try:
+        test = exotics['Response']['data']['itemHashes']
+    except:
+        return exotics
+        
+    exotics = exotics['Response']['data']['itemHashes']
     
     # Fix missing Y3 Ice Breaker
     exotics.append(4242230174)
@@ -841,39 +912,6 @@ def is_it_an_exotic(hash, exotics):
         return 0
 
 
-'''character = {'Subclass': dict 
-                       { "itemHash", dict 
-                                    { "itemName", value } 
-                                    { "itemId", value } 
-                                    { "itemHash", value } 
-                                    { "bucketHash", value } 
-                                    { "transferStatus", value } 
-                        } 
-                       { "itemHash", dict 
-                                    { "itemName", value } 
-                                    { "itemId", value } 
-                                    { "itemHash", value } 
-                                    { "bucketHash", value } 
-                                    { "transferStatus", value } 
-                        } 
-            {'Primary Weapons': dict 
-                       { "itemHash", dict 
-                                    { "itemName", value } 
-                                    { "itemId", value } 
-                                    { "itemHash", value } 
-                                    { "bucketHash", value } 
-                                    { "transferStatus", value } 
-                        } 
-                        { "itemHash", dict 
-                                    { "itemName", value } 
-                                    { "itemId", value } 
-                                    { "itemHash", value } 
-                                    { "bucketHash", value } 
-                                    { "transferStatus", value } 
-                        } '''
-                        
-
-
 def is_bucket_full(character_inventory, bucket_hashes, bucket_type, max_items, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault):
     #print(print_linenumber(), "     FUNCTION : is_bucket_full : " + str(datetime.datetime.now()).split('.')[0])
     #print(print_linenumber(), "              : is_bucket_full               : character_inventory      : " + str(character_inventory))
@@ -881,14 +919,6 @@ def is_bucket_full(character_inventory, bucket_hashes, bucket_type, max_items, b
     #print(print_linenumber(), "              : is_bucket_full               : bucket_type              : " + str(bucket_type))
     #print(print_linenumber(), "              : is_bucket_full               : max_items                : " + str(max_items))
 
-    #bucket_count = character_inventory['bucket_hashes'].count(int(bucket_hashes[bucket_type]))
-
-    #print(print_linenumber(), "str(bucket_type) : " + str(bucket_type))
-    #print(print_linenumber(), "bucket_hashes_weapons : " + str(bucket_hashes_weapons))
-    #print(print_linenumber(), "bucket_hashes_weapons.values() : " + str(bucket_hashes_weapons.values()))
-    
-    #bucket_type = next(find_dict_key_by_value(bucket_hashes_weapons, str(bucket_hash)), None)
-    
     if str(bucket_type) in bucket_hashes_weapons:
         #print(print_linenumber(), "str(bucket_type) in bucket_hashes_weapons")
         bucket_count = character_inventory['bucket_hashes'].count(int(bucket_hashes_weapons[bucket_type]))
@@ -922,98 +952,78 @@ def standardize_loadout_name(intent):
    
     if intent['slots']['LOADOUT']['value']:
         loadout = str(intent['slots']['LOADOUT']['value'])
-        print(print_linenumber(), "                            loadout : " + str(loadout))
+        #print(print_linenumber(), "                            loadout : " + str(loadout))
             
         if ("trial" in loadout) or ("osiris" in loadout) or "tyrrells" in loadout or "cyrus" in loadout or "trowels" in loadout:
             loadout_name = "TRIALS"
-        elif "iron banner" in loadout or "iron banner gear" in loadout or "iron banana" in loadout or "lord salad man's party" in loadout:
+        elif "iron" in loadout or "banner" in loadout or "banana" in loadout or "salad man" in loadout or "saladin" in loadout:
             loadout_name = "IRON_BANNER"
-        elif "iron" in loadout or "banner" in loadout or "banana" in loadout or "salad" in loadout or "saladin" in loadout:
-            loadout_name = "IRON_BANNER"
-        elif "ranked" in loadout or "competitive" in loadout or "ranked playlist" in loadout or "ranked matches" in loadout or "ranked match" in loadout:
+        elif "ranked" in loadout or "competitive" in loadout:
             loadout_name = "COMPETITIVE_PLAY"           
-        elif "quick" in loadout or "crucible" in loadout or "p. v. p." in loadout or "quick play" in loadout:
+        elif "quick" in loadout or "crucible" in loadout or "p. v. p." in loadout:
             loadout_name = "QUICK_PLAY"
-        elif "strike" in loadout or "p. v. e." in loadout or "strikes" in loadout:
+        elif "strike" in loadout or "p. v. e." in loadout:
             loadout_name = "STRIKE"              
         elif "patrol" in loadout or "lost" in loadout or "sector" in loadout or "public" in loadout or "event" in loadout:
             loadout_name = "PATROL"            
-        elif "adventure" in loadout or "flash" in loadout or "point" in loadout or "farm" in loadout:
+        elif "adventure" in loadout or "flash" in loadout or "point" in loadout or "farm" in loadout or "tower" in loadout:
             loadout_name = "PATROL"    
-        elif "lost sector" in loadout or "lost sectors" in loadout or "public event" in loadout or "public events" in loadout:
-            loadout_name = "PATROL"   
-        elif "adventures" in loadout or "flashpoint" in loadout or "flashpoints" in loadout or "the farm" in loadout:
-            loadout_name = "PATROL"   
         elif "favorite" in loadout or "favourite" in loadout:
             loadout_name = "FAVORITE"              
-        elif "desolate" in loadout or "taken" in loadout or "taken shiver" in loadout:
+        elif "desolate" in loadout or "taken" in loadout:
             loadout_name = "DESOLATE"              
-        elif "v. o. g." in loadout or "hezen lords" in loadout or "hezen" in loadout or "ka beers" in loadout or "kabrs" in loadout:
+        elif "v. o. g." in loadout or "hezen" in loadout or "beers" in loadout or "kabrs" in loadout or "volt" in loadout:
             loadout_name = "VAULT_OF_GLASS"    
-        elif "kabers" in loadout or "prime zealot" in loadout or "vault" in loadout or "glass" in loadout or "Vltava" in loadout:
+        elif "kabers" in loadout or "zealot" in loadout or "vault" in loadout or "glass" in loadout or "Vltava" in loadout:
             loadout_name = "VAULT_OF_GLASS"    
-        elif "crota" in loadout or "krota" in loadout or "crota's end" in loadout or "crotas end" in loadout or "cuirass" in loadout:
+        elif "crota" in loadout or "krota" in loadout or "end" in loadout or "cuirass" in loadout or "chronos" in loadout:
             loadout_name = "CROTAS_END"          
-        elif "curassis" in loadout or "curasis" in loadout or "death singers" in loadout or "deathsingers" in loadout or "death singer's" in loadout or "chronos" in loadout:
+        elif "curassis" in loadout or "curasis" in loadout or "death" in loadout or "singer" in loadout:
             loadout_name = "CROTAS_END" 
-        elif "oryx" in loadout or "totems" in loadout or "daughters of oryx" in loadout or "golgorath" in loadout or "golgoroth" in loadout or "war numens" in loadout:
+        elif "oryx" in loadout or "totem" in loadout or "daughter" in loadout or "golgorath" in loadout or "golgoroth" in loadout or "war numens" in loadout:
             loadout_name = "KINGS_FALL"  
-        elif "kings fall" in loadout or "king's fall" in loadout or "dark hallow" in loadout or "darkhallow" in loadout or "harrowed" in loadout:
+        elif "kings" in loadout or "fall" in loadout or "hallow" in loadout or "harrowed" in loadout:
             loadout_name = "KINGS_FALL"      
-        elif "spliced red misama" in loadout or "spliced red miasma" in loadout or "spliced nanomania" in loadout or "cosmoclast" in loadout or "spliced cosmoclast" in loadout:
+        elif "spliced" in loadout or "miasma" in loadout or "nanomania" in loadout or "cosmoclast" in loadout or "machine" in loadout:
             loadout_name = "WRATH_OF_THE_MACHINE"              
-        elif "miasma" in loadout or "misama" in loadout or "red misama" in loadout or "red miasma" in loadout or "perfected siva" in loadout:
+        elif "misama" in loadout or "perfected" in loadout or "siva" in loadout or "nano" in loadout or "wrath" in loadout:
             loadout_name = "WRATH_OF_THE_MACHINE"    
-        elif "siva" in loadout or "spliced" in loadout or "nanomania" in loadout or "nano mania" in loadout or "wrath" in loadout or "machine" in loadout:
-            loadout_name = "WRATH_OF_THE_MACHINE"
-        #elif "raid part four" in loadout or "the raid part four":
-        #    loadout_name = "RAID_PART_4"  
-        #elif "raid part three" in loadout or "the raid part three":
-        #    loadout_name = "RAID_PART_3"              
-        #elif "raid part two" in loadout or "the raid part two":
-        #    loadout_name = "RAID_PART_2"              
-        #elif "the raid" in loadout or "raid" in loadout:
-        #    loadout_name = "RAID"  
+        elif "leviathan" in loadout or "level ethan" in loadout or "leviethen" in loadout:
+            loadout_name = "LEVIATHAN"
+        elif "arc" in loadout or "ark" in loadout:
+            loadout_name = "ARC_BURN"
+        elif "solar" in loadout:
+            loadout_name = "SOLAR_BURN"
+        elif "void" in loadout:
+            loadout_name = "VOID_BURN"
         else:
             loadout_name = "DEFAULT"
     else:
         loadout_name = "DEFAULT"
         
-    print(print_linenumber(), "                       loadout_name : " + str(loadout_name))            
+    #print(print_linenumber(), "                       loadout_name : " + str(loadout_name))            
     return str(loadout_name)
-        
-        
-def get_character_equipped_items(auth_token, membership_type, membership_id, character_id, exotics, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory):
+
+
+def get_character_equipped_items(exotics, character_inventory):
     print(print_linenumber(), "     FUNCTION : get_character_equipped_items : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              : get_character_equipped_items : auth_token               : " + str(auth_token))
-    print(print_linenumber(), "              : get_character_equipped_items : membership_type          : " + str(membership_type))
-    print(print_linenumber(), "              : get_character_equipped_items : membership_id            : " + str(membership_id))
-    print(print_linenumber(), "              : get_character_equipped_items : character_id             : " + str(character_id))
-    print(print_linenumber(), "              : get_character_equipped_items : exotics                  : " + str(exotics))
-    print(print_linenumber(), "              : get_character_equipped_items : character_zero_inventory : " + str(character_zero_inventory))
-    print(print_linenumber(), "              : get_character_equipped_items : character_one_inventory  : " + str(character_one_inventory))
-    print(print_linenumber(), "              : get_character_equipped_items : character_two_inventory  : " + str(character_two_inventory))    
-    print(print_linenumber(), "              : get_character_equipped_items : vault_inventory          : " + str(vault_inventory))    
-     
-    global main_domain
-    global api_key      
+    #print(print_linenumber(), "              : get_character_equipped_items : auth_token               : " + str(auth_token))
+    #print(print_linenumber(), "              : get_character_equipped_items : exotics                  : " + str(exotics))
+    #print(print_linenumber(), "              : get_character_equipped_items : character_inventory : " + str(character_inventory))  
+    #print(print_linenumber(), "              : get_character_equipped_items : vault_inventory          : " + str(vault_inventory))    
 
     exotic_items = []
     itemHashes = []
     itemIds = []
     bucket_hashes = []
     equipped_items = {"exotic_item": exotic_items, "itemHash": itemHashes, "itemId": itemIds, "bucket_hash": bucket_hashes}
-    
-    url = main_domain + "/Platform/Destiny/" + str(membership_type) + "/Account/" \
-        + str(membership_id) + "/Character/" + str(character_id) + "/" 
-    character_equipped_items = call_api(url, api_key, auth_token)['Response']['data']['characterBase']['peerView']['equipment']
-    print(print_linenumber(), "           character_equipped_items : " + str(character_equipped_items))
-    
-    for index, item in enumerate(character_equipped_items):
-        itemHashes.append(item['itemHash'])    
-        exotic_items.append(is_it_an_exotic(item['itemHash'], exotics))
-        itemIds.append(itemId_from_itemHash(item['itemHash'], character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory))
-        bucket_hashes.append(bucket_hash_from_itemHash(item['itemHash'], character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory))
+
+    for index, value in enumerate(character_inventory['transferStatus']):
+        if int(character_inventory['transferStatus'][index]) == 1 or int(character_inventory['transferStatus'][index]) == 3:
+            itemHashes.append(character_inventory['itemHashes'][index])    
+            exotic_items.append(is_it_an_exotic(character_inventory['itemHashes'][index], exotics))
+            itemIds.append(character_inventory['itemIds'][index])
+            bucket_hashes.append(character_inventory['bucket_hashes'][index])
        
     print(print_linenumber(), "                       exotic_items : " + str(exotic_items))        
     print(print_linenumber(), "                         itemHashes : " + str(itemHashes))
@@ -1025,39 +1035,47 @@ def get_character_inventories(auth_token, membership_type, membership_id):
     print(print_linenumber(), "              : get_character_inventories    : auth_token               : " + str(auth_token))
     print(print_linenumber(), "              : get_character_inventories    : membership_type          : " + str(membership_type))
     print(print_linenumber(), "              : get_character_inventories    : membership_id            : " + str(membership_id))
-     
-    global main_domain
-    global api_key  
 
+    data = {}
+    data['membershipType'] = membership_type
+    data['membershipId'] = membership_id
+    
+    # "transferStatus": 1,
+    character_zero_transferStatus = []
     character_zero_itemHashes = []
     character_zero_itemIds = []
     character_zero_bucket_hashes = []
     character_zero_characterIndices = []
     character_zero_quantities = []
     character_zero_bucket_is_full = []
-    character_zero_inventory = {'itemHashes': character_zero_itemHashes, \
+    character_zero_inventory = {'transferStatus': character_zero_transferStatus, \
+                                'itemHashes': character_zero_itemHashes, \
                                 'itemIds': character_zero_itemIds, \
                                 'bucket_hashes': character_zero_bucket_hashes, \
                                 'quantities': character_zero_quantities, \
                                 'bucketsFull': character_zero_bucket_is_full}
+    character_one_transferStatus = []
     character_one_itemHashes = []
     character_one_itemIds = []
     character_one_bucket_hashes = []
     character_one_characterIndices = []
     character_one_quantities = []
     character_one_bucket_is_full = []
-    character_one_inventory = {'itemHashes': character_one_itemHashes, \
+    character_one_inventory = {'transferStatus': character_one_transferStatus, \
+                                'itemHashes': character_one_itemHashes, \
                                 'itemIds': character_one_itemIds, \
                                 'bucket_hashes': character_one_bucket_hashes, \
                                 'quantities': character_one_quantities, \
                                 'bucketsFull': character_one_bucket_is_full}
+    character_two_transferStatus = []
     character_two_itemHashes = []
     character_two_itemIds = []
     character_two_bucket_hashes = []
     character_two_characterIndices = []
     character_two_quantities = []
     character_two_bucket_is_full = []
-    character_two_inventory = {'itemHashes': character_two_itemHashes, \
+    character_two_inventory = {'transferStatus': character_two_transferStatus, \
+                                'itemHashes': character_two_itemHashes, \
                                 'itemIds': character_two_itemIds, \
                                 'bucket_hashes': character_two_bucket_hashes, \
                                 'quantities': character_two_quantities, \
@@ -1083,58 +1101,114 @@ def get_character_inventories(auth_token, membership_type, membership_id):
     bucket_hashes_vault = {}
     bucket_hashes_subclass = {}
 
-    #bucket_hashes_all = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition ORDER BY bucketName;"))
-    #print(print_linenumber(), "                  bucket_hashes_all : " + str(bucket_hashes_all))
+    # Also this : https://destiny.plumbing/en/raw/DestinyInventoryBucketDefinition.json
 
-    bucket_hashes = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Primary Weapons' or json->>'bucketName' = 'Special Weapons' or json->>'bucketName' = 'Heavy Weapons' or json->>'bucketName' = 'Helmet' or json->>'bucketName' = 'Gauntlets' or json->>'bucketName' = 'Chest Armor' or json->>'bucketName' = 'Leg Armor' or json->>'bucketName' = 'Class Armor' or json->>'bucketName' = 'Artifacts' or json->>'bucketName' = 'Ghost' or json->>'bucketName' = 'Emblems' or json->>'bucketName' = 'Ships' or json->>'bucketName' = 'Shaders' or json->>'bucketName' = 'Emotes' or json->>'bucketName' = 'Vehicle' or json->>'bucketName' = 'Sparrow Horn' ORDER BY json->>'bucketName';"))
-    print(print_linenumber(), "                      bucket_hashes : " + str(bucket_hashes))
+    # Get itemHash of Heavy Ammo, find char/vault inventories index number.    
+    # SELECT json->>'itemHash' FROM DestinyInventoryItemDefinition WHERE json->>'itemName'='Heavy Ammo Synthesis' limit 1;
+
+    try:
+        bucket_hashes_everything = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition ORDER BY json->>'bucketName';"))
+    except:
+        bucket_hashes_everything = {
+            'Armor':'3003523923',
+            'Artifacts':'434908299',
+            'Bounties':'2197472680',
+            'Chest Armor':'14239492',
+            'Class Armor':'1585787867',
+            'Consumables':'1469714392',
+            'Crucible Marks':'2689798310',
+            'Currency':'3772930460',
+            'Emblems':'4274335291',
+            'Emotes':'3054419239',
+            'Gauntlets':'3551918588',
+            'General':'138197802',
+            'Ghost':'4023194814',
+            'Glimmer':'2689798308',
+            'Heavy Weapons':'953998645',
+            'Helmet':'3448274439',
+            'Legacy Record Books':'549485690',
+            'Leg Armor':'20886954',
+            'Legendary Marks':'2689798304',
+            'Lost Items':'215593132',
+            'Materials':'3865314626',
+            'Messages':'3161908920',
+            'Mission':'375726501',
+            'Ornaments':'3313201758',
+            'Primary Weapons':'1498876634',
+            'Quests':'1801258597',
+            'Record Books':'2987185182',
+            'Shaders':'2973005342',
+            'Ships':'284967655',
+            'Silver':'2689798311',
+            'Sparrow Horn':'3796357825',
+            'Special Orders':'1367666825',
+            'Special Weapons':'2465295065',
+            'Subclass':'3284755031',
+            'Vanguard Marks':'2689798309',
+            'Vehicle':'2025709351',
+            'Weapons':'4046403665'
+        }
+        
+    print(print_linenumber(), "           bucket_hashes_everything : " + str(bucket_hashes_everything)) 
     
-    bucket_hashes_weapons = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Primary Weapons' or json->>'bucketName' = 'Special Weapons' or json->>'bucketName' = 'Heavy Weapons' ORDER BY json->>'bucketName';"))
-    print(print_linenumber(), "              bucket_hashes_weapons : " + str(bucket_hashes_weapons))
-
-    bucket_hashes_armor = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Helmet' or json->>'bucketName' = 'Gauntlets' or json->>'bucketName' = 'Chest Armor' or json->>'bucketName' = 'Leg Armor' or json->>'bucketName' = 'Class Armor' or json->>'bucketName' = 'Artifacts' or json->>'bucketName' = 'Ghost' ORDER BY json->>'bucketName';"))
-    print(print_linenumber(), "                bucket_hashes_armor : " + str(bucket_hashes_armor))
+    #bucket_hashes = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Primary Weapons' or json->>'bucketName' = 'Special Weapons' or json->>'bucketName' = 'Heavy Weapons' or json->>'bucketName' = 'Helmet' or json->>'bucketName' = 'Gauntlets' or json->>'bucketName' = 'Chest Armor' or json->>'bucketName' = 'Leg Armor' or json->>'bucketName' = 'Class Armor' or json->>'bucketName' = 'Artifacts' or json->>'bucketName' = 'Ghost' or json->>'bucketName' = 'Emblems' or json->>'bucketName' = 'Ships' or json->>'bucketName' = 'Shaders' or json->>'bucketName' = 'Emotes' or json->>'bucketName' = 'Vehicle' or json->>'bucketName' = 'Sparrow Horn' ORDER BY json->>'bucketName';"))
+    #print(print_linenumber(), "                      bucket_hashes : " + str(bucket_hashes))
+    keys = ['Primary Weapons', 'Special Weapons', 'Heavy Weapons', 'Helmet', 'Gauntlets', 'Chest Armor', 'Leg Armor', 'Class Armor', 'Artifacts', 'Ghost', 'Emblems', 'Ships', 'Shaders', 'Emotes', 'Vehicle', 'Sparrow Horn']
+    bucket_hashes = {x:bucket_hashes_everything[x] for x in keys}
     
-    bucket_hashes_general = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Emblems' or json->>'bucketName' = 'Ships' or json->>'bucketName' = 'Shaders' or json->>'bucketName' = 'Emotes' or json->>'bucketName' = 'Vehicle' or json->>'bucketName' = 'Sparrow Horn' ORDER BY json->>'bucketName';"))
-    print(print_linenumber(), "            bucket_hashes_general : " + str(bucket_hashes_general))
+    #bucket_hashes_weapons = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Primary Weapons' or json->>'bucketName' = 'Special Weapons' or json->>'bucketName' = 'Heavy Weapons' ORDER BY json->>'bucketName';"))
+    #print(print_linenumber(), "              bucket_hashes_weapons : " + str(bucket_hashes_weapons))
+    keys = ['Primary Weapons', 'Special Weapons', 'Heavy Weapons']
+    bucket_hashes_weapons = {x:bucket_hashes[x] for x in keys}
     
-    bucket_hashes_vault = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Weapons' or json->>'bucketName' = 'Armor' or json->>'bucketName' = 'General' ORDER BY json->>'bucketName';"))
-    print(print_linenumber(), "                bucket_hashes_vault : " + str(bucket_hashes_vault))
-
-    bucket_hashes_subclass = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Subclass' ORDER BY json->>'bucketName';"))
-    print(print_linenumber(), "             bucket_hashes_subclass : " + str(bucket_hashes_subclass))
-
-    # Subclass   | 3284755031
+    #bucket_hashes_armor = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Helmet' or json->>'bucketName' = 'Gauntlets' or json->>'bucketName' = 'Chest Armor' or json->>'bucketName' = 'Leg Armor' or json->>'bucketName' = 'Class Armor' or json->>'bucketName' = 'Artifacts' or json->>'bucketName' = 'Ghost' ORDER BY json->>'bucketName';"))
+    #print(print_linenumber(), "                bucket_hashes_armor : " + str(bucket_hashes_armor))
+    keys = ['Helmet', 'Gauntlets', 'Chest Armor', 'Leg Armor', 'Class Armor', 'Artifacts', 'Ghost']
+    bucket_hashes_armor = {x:bucket_hashes[x] for x in keys}
     
-    url = main_domain + "/Platform/Destiny/" + str(membership_type) + "/Account/" + str(membership_id) + "/Items/" 
-    account_inventory_from_api = call_api(url, api_key, auth_token)['Response']['data']['items']
+    #bucket_hashes_general = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Emblems' or json->>'bucketName' = 'Ships' or json->>'bucketName' = 'Shaders' or json->>'bucketName' = 'Emotes' or json->>'bucketName' = 'Vehicle' or json->>'bucketName' = 'Sparrow Horn' ORDER BY json->>'bucketName';"))
+    #print(print_linenumber(), "            bucket_hashes_general : " + str(bucket_hashes_general))
+    keys = ['Emblems', 'Ships', 'Shaders', 'Emotes', 'Vehicle', 'Sparrow Horn']
+    bucket_hashes_general = {x:bucket_hashes[x] for x in keys}
+    
+    #bucket_hashes_vault = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Weapons' or json->>'bucketName' = 'Armor' or json->>'bucketName' = 'General' ORDER BY json->>'bucketName';"))
+    #print(print_linenumber(), "                bucket_hashes_vault : " + str(bucket_hashes_vault))
+    keys = ['Weapons', 'Armor', 'General']
+    bucket_hashes_vault = {x:bucket_hashes_everything[x] for x in keys}
+    
+    #bucket_hashes_subclass = dict(query_bungie_db("SELECT json->>'bucketName' AS bucketName, json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Subclass' ORDER BY json->>'bucketName';"))
+    #print(print_linenumber(), "             bucket_hashes_subclass : " + str(bucket_hashes_subclass))
+    keys = ['Subclass']
+    bucket_hashes_subclass = {x:bucket_hashes_everything[x] for x in keys}
+    
+    endpoint = "account_inventory_from_api"
+    #account_inventory_from_api = call_api(endpoint, auth_token)['Response']['data']['items']
+    account_inventory_from_api = call_api(endpoint, auth_token, data)
+    print(print_linenumber(), "         account_inventory_from_api : " + str(account_inventory_from_api))
 
-    # TRYING TO ADD REAL BUCKET TYPES FROM QUERYING VAULT INSTEAD OF ITEMS
+    try:
+        test = account_inventory_from_api['Response']['data']['items']
+    except:
+        return account_inventory_from_api
+        
+    account_inventory_from_api = account_inventory_from_api['Response']['data']['items']
+        
+    # ADDING REAL BUCKET TYPES FROM QUERYING VAULT INSTEAD OF ITEMS
     # http://www.bungie.net/Platform/Destiny/{membershipType}/MyAccount/Vault/Summary/
-    url = main_domain + "/Platform/Destiny/" + str(membership_type) + "/MyAccount/Vault/Summary/?definitions=true" 
-    vault_inventory_from_api = call_api(url, api_key, auth_token)['Response']['definitions']['items']
-
-    # print(print_linenumber(), "   vault_inventory_from_api : " + str(vault_inventory_from_api))
     
-    #{
-    #  "Response": {
-    #    "data": {
-    #    "definitions": {
-    #      "items": {
-    #        "201220485": {
-    #          "itemHash": 201220485,
-    #          "itemName": "Iron Saga Vest",
-    #          "itemDescription": "Thus armed were the Iron Lords of old, in the days after the Collapse.",
-    #          "icon": "/common/destiny_content/icons/43ba33377e3c950aa7a8a8c891045de8.jpg",
-    #          "hasIcon": true,
-    #          "secondaryIcon": "/img/misc/missing_icon.png",
-    #          "actionName": "Dismantle",
-    #          "hasAction": true,
-    #          "deleteOnAction": true,
-    #          "tierTypeName": "Legendary",
-    #          "tierType": 5,
-    #          "itemTypeName": "Chest Armor",
-    #          "bucketTypeHash": 14239492,
+    endpoint = "vault_inventory_from_api"
+    #vault_inventory_from_api = call_api(endpoint, auth_token)['Response']['definitions']['items']
+    vault_inventory_from_api = call_api(endpoint, auth_token, data)
+    print(print_linenumber(), "         vault_inventory_from_api : " + str(vault_inventory_from_api))
+
+    try:
+        test = vault_inventory_from_api['Response']['definitions']['items']
+    except:
+        return vault_inventory_from_api
+
+    vault_inventory_from_api = vault_inventory_from_api['Response']['definitions']['items']
+    
+    # print(print_linenumber(), "   vault_inventory_from_api : " + str(vault_inventory_from_api))
 
     for index, item in enumerate(account_inventory_from_api):
         #print(print_linenumber(), "                              index : " + str(index))
@@ -1143,8 +1217,8 @@ def get_character_inventories(auth_token, membership_type, membership_id):
         if item['characterIndex'] == 0:
             #print(print_linenumber(), "        item['characterIndex'] == 0 : ")
             if item['transferStatus'] != 2 and str(item['bucketHash']) not in bucket_hashes_subclass.values():
-            #if item['transferStatus'] != 2 and item['bucketHash'] not in bucket_hashes['Subclass'].values():
                 #print(print_linenumber(), "item['transferStatus'] != 2 and item['bucketHash'] not in bucket_hashes_subclass.values() : ")
+                character_zero_transferStatus.append(item['transferStatus'])
                 character_zero_itemHashes.append(item['itemHash'])
                 character_zero_itemIds.append(item['itemId'])
                 character_zero_characterIndices.append(item['characterIndex'])
@@ -1153,8 +1227,8 @@ def get_character_inventories(auth_token, membership_type, membership_id):
         elif item['characterIndex'] == 1:
             #print(print_linenumber(), "        item['characterIndex'] == 1 : ")
             if item['transferStatus'] != 2 and str(item['bucketHash']) not in bucket_hashes_subclass.values():
-            #if item['transferStatus'] != 2 and item['bucketHash'] not in bucket_hashes['Subclass'].values():
                 #print(print_linenumber(), "item['transferStatus'] != 2 and item['bucketHash'] not in bucket_hashes_subclass.values() : ")
+                character_one_transferStatus.append(item['transferStatus'])
                 character_one_itemHashes.append(item['itemHash'])
                 character_one_itemIds.append(item['itemId'])
                 character_one_characterIndices.append(item['characterIndex'])
@@ -1163,8 +1237,8 @@ def get_character_inventories(auth_token, membership_type, membership_id):
         elif item['characterIndex'] == 2:
             #print(print_linenumber(), "        item['characterIndex'] == 2 : ")
             if item['transferStatus'] != 2 and str(item['bucketHash']) not in bucket_hashes_subclass.values():
-            #if item['transferStatus'] != 2 and item['bucketHash'] not in bucket_hashes['Subclass'].values():
                 #print(print_linenumber(), "item['transferStatus'] != 2 and item['bucketHash'] not in bucket_hashes_subclass.values() : ")
+                character_two_transferStatus.append(item['transferStatus'])
                 character_two_itemHashes.append(item['itemHash'])
                 character_two_itemIds.append(item['itemId'])
                 character_two_characterIndices.append(item['characterIndex'])
@@ -1186,7 +1260,13 @@ def get_character_inventories(auth_token, membership_type, membership_id):
                 #print(print_linenumber(), "str(vault_inventory_from_api[str(item['itemHash'])]) : " + str(vault_inventory_from_api[str(item['itemHash'])]))
                 #print(print_linenumber(), "str(vault_inventory_from_api[str(item['itemHash'])]['itemName'])) : " + str(vault_inventory_from_api[str(item['itemHash'])]['itemName']))
                 #print(print_linenumber(), "str(vault_inventory_from_api[str(item['itemHash'])]['bucketTypeHash']) : " + str(vault_inventory_from_api[str(item['itemHash'])]['bucketTypeHash']))
-                vault_bucket_hashes.append(vault_inventory_from_api[str(item['itemHash'])]['bucketTypeHash'])
+                try:
+                    vault_bucket_hashes.append(vault_inventory_from_api[str(item['itemHash'])]['bucketTypeHash'])
+                except:
+                    print("vault_bucket_hashes.append(vault_inventory_from_api[str(item['itemHash'])]['bucketTypeHash'])")
+                    print(vault_inventory_from_api)
+                    print(item['itemHash'])
+                    print(vault_inventory_from_api[str(item['itemHash'])]['bucketTypeHash'])
             else:
                 print(print_linenumber(), "str(item['bucketHash']) not in bucket_hashes_vault.values() : ")
                 print(print_linenumber(), "                bucket_hashes_vault : " + str(bucket_hashes_vault))
@@ -1194,10 +1274,11 @@ def get_character_inventories(auth_token, membership_type, membership_id):
         else:
             print(print_linenumber(), "                                ERROR : This should never happen.  Character index for item was not 0, 1, 2, or -1.  ")
             print(print_linenumber(), "               item['characterIndex'] : " + str(item['characterIndex']))
-            
+
+    print(print_linenumber(), "           character_zero_inventory : " + str(character_zero_inventory))
+    print(print_linenumber(), "            character_one_inventory : " + str(character_one_inventory))
+    print(print_linenumber(), "            character_two_inventory : " + str(character_two_inventory))
     print(print_linenumber(), "                    vault_inventory : " + str(vault_inventory))
-    
-    character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory = mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
 
     return character_zero_inventory, character_one_inventory, \
            character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault, bucket_hashes_subclass
@@ -1205,11 +1286,16 @@ def get_character_inventories(auth_token, membership_type, membership_id):
 
 def mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault):
     print(print_linenumber(), "     FUNCTION : mark_full_inventories : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              : mark_full_inventories        : character_zero_inventory : " + str(character_zero_inventory))
-    print(print_linenumber(), "              : mark_full_inventories        : character_one_inventory  : " + str(character_one_inventory))
-    print(print_linenumber(), "              : mark_full_inventories        : character_two_inventory  : " + str(character_two_inventory))
-    print(print_linenumber(), "              : mark_full_inventories        : vault_inventory          : " + str(vault_inventory))
-    print(print_linenumber(), "              : mark_full_inventories        : bucket_hashes            : " + str(bucket_hashes))
+    #print(print_linenumber(), "              : mark_full_inventories        : character_zero_inventory : " + str(character_zero_inventory))
+    #print(print_linenumber(), "              : mark_full_inventories        : character_one_inventory  : " + str(character_one_inventory))
+    #print(print_linenumber(), "              : mark_full_inventories        : character_two_inventory  : " + str(character_two_inventory))
+    #print(print_linenumber(), "              : mark_full_inventories        : vault_inventory          : " + str(vault_inventory))
+    #print(print_linenumber(), "              : mark_full_inventories        : bucket_hashes            : " + str(bucket_hashes))
+
+    print('Character Zero Full Buckets : ' + str(character_zero_inventory['bucketsFull']))
+    print( 'Character One Full Buckets : ' + str(character_one_inventory['bucketsFull']))
+    print(' Character Two Full Buckets : ' + str(character_two_inventory['bucketsFull']))
+    print(         'Vault Full Buckets : ' + str(vault_inventory['bucketsFull']))   
 
     character_zero_inventory['bucketsFull'] = []
     character_one_inventory['bucketsFull'] = []
@@ -1351,18 +1437,12 @@ def mark_full_inventories(character_zero_inventory, character_one_inventory, cha
            character_two_inventory, vault_inventory
            
 
-def save_loadout(display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, timestamp):
+def save_loadout(user_info, loadout_name, equipped_items, value, timestamp):
     print(print_linenumber(), "     FUNCTION : save_loadout : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              : save_loadout                 : display_name             : " + str(display_name))
-    print(print_linenumber(), "              : save_loadout                 : membership_id_bungie     : " + str(membership_id_bungie))
-    print(print_linenumber(), "              : save_loadout                 : membership_type          : " + str(membership_type))
-    print(print_linenumber(), "              : save_loadout                 : membership_id            : " + str(membership_id))
-    print(print_linenumber(), "              : save_loadout                 : character_id             : " + str(character_id))
-    print(print_linenumber(), "              : save_loadout                 : character_race           : " + str(character_race))
-    print(print_linenumber(), "              : save_loadout                 : character_gender         : " + str(character_gender))
-    print(print_linenumber(), "              : save_loadout                 : character_class          : " + str(character_class))
+    print(print_linenumber(), "              : save_loadout                 : user_info                : " + str(user_info))
     print(print_linenumber(), "              : save_loadout                 : loadout_name             : " + str(loadout_name))
     print(print_linenumber(), "              : save_loadout                 : equipped_items           : " + str(equipped_items))
+    print(print_linenumber(), "              : save_loadout                 : value                    : " + str(value))
     print(print_linenumber(), "              : save_loadout                 : timestamp                : " + str(timestamp))
 
     global db_host
@@ -1370,40 +1450,199 @@ def save_loadout(display_name, membership_id_bungie, membership_type, membership
     global db_user
     global db_pass
     global db_port
-
-    equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')
-    equipped_items = equipped_items_encoded
     
-    # SEE IF LOADOUT ALREADY EXISTS
-    exists = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(membership_id_bungie) + "' AND membership_type =  '" + str(membership_type) + "' AND membership_id = '" + str(membership_id) + "' AND character_id = '" + str(character_id) + "' AND character_race = '" + str(character_race) + "' AND character_gender = '" + str(character_gender) + "' AND character_class = '" + str(character_class) + "' AND loadout_name = '" + str(loadout_name) + "';")
-
+    print(print_linenumber(), "                     equipped_items : " + str(equipped_items))
+    equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')
+    
     conn = None
     conn = psycopg2.connect(host=db_host, database=db_name_alexa, user=db_user, \
                             password=db_pass, port=db_port)
     cur = conn.cursor()
+    
+    if loadout_name == "FAVORITE":
+        loadout_encoded = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(user_info['membership_id_bungie']) + "' AND membership_type =  '" + str(user_info['membership_type']) + "' AND membership_id = '" + str(user_info['membership_id']) + "' AND character_id = '" + str(user_info['character_zero_id']) + "' AND loadout_name = '" + str(loadout_name) + "';")
 
-    if exists:
+        if loadout_encoded == []:
+            card_title = app_title + " : FAILED : Can't Equip loadout, no loadout found."
+            speech = "No loadout for " + loadout_name.replace("_", " ").title() + \
+            " has been saved on this character.  Loadouts are character specific."
+            end_session = True
+            return alexa_speak(card_title, speech, end_session)        
+        
+        loadout_encoded = loadout_encoded[0]
+        loadout_encoded = loadout_encoded[0]
+        favorite_items = dict(pickle.loads(loadout_encoded.decode('base64', 'strict')))
+
+        if value == "emblem":
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Emblems';")[0]
+            bucket_hash = int(bucket_hash[0])
+
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')
+            
+        elif value == "emote":
+            # bucket_hash = '3054419239'
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Emotes';")[0]
+            bucket_hash = int(bucket_hash[0])
+           
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')          
+        elif value == "ghost":
+            # bucket_hash = '4023194814'
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Ghost';")[0]
+            bucket_hash = int(bucket_hash[0])
+            
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')             
+        elif value == "shader":
+            # bucket_hash = '2973005342'
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Shaders';")[0]
+            bucket_hash = int(bucket_hash[0])
+            
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')  
+        elif value == "ship":
+            # bucket_hash = '284967655'
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Ships';")[0]
+            bucket_hash = int(bucket_hash[0])
+            
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')              
+        elif value == "subclass":
+            # bucket_hash = '3284755031'
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Subclass';")[0]
+            bucket_hash = int(bucket_hash[0])
+            
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')             
+        elif value == "sparrow":
+            # bucket_hash = '2025709351'
+            bucket_hash = query_bungie_db("SELECT json->>'hash' AS bucketHash FROM DestinyInventoryBucketDefinition WHERE json->>'bucketName' = 'Vehicle';")[0]
+            bucket_hash = int(bucket_hash[0])
+            
+            position = equipped_items.get('bucket_hash').index(bucket_hash)
+            exotic_item = equipped_items.get('exotic_item')[position]
+            itemId = equipped_items.get('itemId')[position]
+            itemHash = equipped_items.get('itemHash')[position]
+            
+            position = favorite_items.get('bucket_hash').index(bucket_hash)
+            favorite_items['exotic_item'][position] = exotic_item
+            favorite_items['itemId'][position] = itemId
+            favorite_items['itemHash'][position] = itemHash
+
+            equipped_items = favorite_items
+            equipped_items_encoded = pickle.dumps(equipped_items).encode('base64', 'strict')                
+            
+        print(print_linenumber(), "                     favorite_items : " + str(favorite_items))
+
+    # SEE IF LOADOUT ALREADY EXISTS FOR CHARACTER ZERO
+    exists_character_zero = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(user_info['membership_id_bungie']) + "' AND membership_type =  '" + str(user_info['membership_type']) + "' AND membership_id = '" + str(user_info['membership_id']) + "' AND character_id = '" + str(user_info['character_zero_id']) + "' AND loadout_name = '" + str(loadout_name) + "';")
+
+    # SEE IF LOADOUT ALREADY EXISTS FOR CHARACTER ONE
+    exists_character_one = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(user_info['membership_id_bungie']) + "' AND membership_type =  '" + str(user_info['membership_type']) + "' AND membership_id = '" + str(user_info['membership_id']) + "' AND character_id = '" + str(user_info['character_one_id']) + "' AND loadout_name = '" + str(loadout_name) + "';")
+    
+    # SEE IF LOADOUT ALREADY EXISTS FOR CHARACTER TWO
+    exists_character_two = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(user_info['membership_id_bungie']) + "' AND membership_type =  '" + str(user_info['membership_type']) + "' AND membership_id = '" + str(user_info['membership_id']) + "' AND character_id = '" + str(user_info['character_two_id']) + "' AND loadout_name = '" + str(loadout_name) + "';")
+
+    if exists_character_zero:
         # UPDATE LOADOUT TO NEW LIST OF ITEMS
-        sql = "UPDATE public.loadouts SET equipped_items = '" + str(equipped_items) + "' WHERE membership_id_bungie = '" + str(membership_id_bungie) + "' AND membership_type =  '" + str(membership_type) + "' AND membership_id = '" + str(membership_id) + "' AND character_id = '" + str(character_id) + "' AND character_race = '" + str(character_race) + "' AND character_gender = '" + str(character_gender) + "' AND character_class = '" + str(character_class) + "' AND loadout_name = '" + str(loadout_name) + "';"
+        sql = "UPDATE public.loadouts SET equipped_items = '" + str(equipped_items_encoded) + "' WHERE membership_id_bungie = '" + str(user_info['membership_id_bungie']) + "' AND membership_type =  '" + str(user_info['membership_type']) + "' AND membership_id = '" + str(user_info['membership_id']) + "' AND character_id = '" + str(user_info['character_zero_id']) + "' AND loadout_name = '" + str(loadout_name) + "';"
         cur.execute(sql)
         
         # UPDATE TIMESTAMP TO LAST MODIFIED DATE
-        sql = "UPDATE public.loadouts SET timestamp = '" + str(timestamp) + "' WHERE membership_id_bungie = '" + str(membership_id_bungie) + "' AND membership_type =  '" + str(membership_type) + "' AND membership_id = '" + str(membership_id) + "' AND character_id = '" + str(character_id) + "' AND character_race = '" + str(character_race) + "' AND character_gender = '" + str(character_gender) + "' AND character_class = '" + str(character_class) + "' AND loadout_name = '" + str(loadout_name) + "';"
+        sql = "UPDATE public.loadouts SET timestamp = '" + str(timestamp) + "' WHERE membership_id_bungie = '" + str(user_info['membership_id_bungie']) + "' AND membership_type =  '" + str(user_info['membership_type']) + "' AND membership_id = '" + str(user_info['membership_id']) + "' AND character_id = '" + str(user_info['character_zero_id']) + "' AND loadout_name = '" + str(loadout_name) + "';"
         cur.execute(sql)
     else:
         # INSERT NEW LOADOUT INTO DB
         sql = "INSERT INTO public.loadouts (membership_id_bungie, display_name, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        cur.execute(sql, (membership_id_bungie, display_name, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, timestamp))
+        cur.execute(sql, (user_info['membership_id_bungie'], user_info['display_name'], user_info['membership_type'], user_info['membership_id'], user_info['character_zero_id'], user_info['character_zero_race'], user_info['character_zero_gender'], user_info['character_zero_class'], loadout_name, equipped_items_encoded, timestamp))
+    
+    if not exists_character_one:
+        # INSERT NEW LOADOUT INTO DB
+        sql = "INSERT INTO public.loadouts (membership_id_bungie, display_name, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        cur.execute(sql, (user_info['membership_id_bungie'], user_info['display_name'], user_info['membership_type'], user_info['membership_id'], user_info['character_one_id'], user_info['character_one_race'], user_info['character_one_gender'], user_info['character_one_class'], loadout_name, equipped_items_encoded, timestamp))
+
+    if not exists_character_two:
+        # INSERT NEW LOADOUT INTO DB
+        sql = "INSERT INTO public.loadouts (membership_id_bungie, display_name, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        cur.execute(sql, (user_info['membership_id_bungie'], user_info['display_name'], user_info['membership_type'], user_info['membership_id'], user_info['character_two_id'], user_info['character_two_race'], user_info['character_two_gender'], user_info['character_two_class'], loadout_name, equipped_items_encoded, timestamp))
         
     cur.close()
     conn.commit()
     conn.close()
 
+    if value == "subclass" or value == "sparrow" or value == "ship" or value == "shader" or value == "emote" or value == "emblem" or value == "ghost":
+        if loadout_name == "FAVORITE":
+            speech = "Saved " + loadout_name.replace("_", " ").title() + " " + str(value) + "."
+        else:
+            speech = "Loadout Saved for " + loadout_name.replace("_", " ").title() + "."
+    else:
+        speech = "Loadout Saved for " + loadout_name.replace("_", " ").title() + "."
+        
     card_title = app_title + " : SUCCESS : Loadout Saved."
-    speech = "Loadout Saved for " + loadout_name.replace("_", " ").title() + "."
     end_session = True
     return alexa_speak(card_title, speech, end_session)
-    
+
 
 def equip_loadout(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault, bucket_hashes_subclass):
     print(print_linenumber(), "     FUNCTION :       equip_loadout : " + str(datetime.datetime.now()).split('.')[0])
@@ -1419,10 +1658,10 @@ def equip_loadout(auth_token, display_name, membership_id_bungie, membership_typ
     print(print_linenumber(), "              :       equip_loadout          : equipped_items           : " + str(equipped_items))
     print(print_linenumber(), "              :       equip_loadout          : user_info                : " + str(user_info))
     print(print_linenumber(), "              :       equip_loadout          : bucket_hashes            : " + str(bucket_hashes))
-    print(print_linenumber(), "              :       equip_loadout          : character_zero_inventory : " + str(character_zero_inventory))
-    print(print_linenumber(), "              :       equip_loadout          : character_one_inventory  : " + str(character_one_inventory))
-    print(print_linenumber(), "              :       equip_loadout          : character_two_inventory  : " + str(character_two_inventory))
-    print(print_linenumber(), "              :       equip_loadout          : vault_inventory          : " + str(vault_inventory))
+    #print(print_linenumber(), "              :       equip_loadout          : character_zero_inventory : " + str(character_zero_inventory))
+    #print(print_linenumber(), "              :       equip_loadout          : character_one_inventory  : " + str(character_one_inventory))
+    #print(print_linenumber(), "              :       equip_loadout          : character_two_inventory  : " + str(character_two_inventory))
+    #print(print_linenumber(), "              :       equip_loadout          : vault_inventory          : " + str(vault_inventory))
     
     global main_domain
     global api_key  
@@ -1433,17 +1672,13 @@ def equip_loadout(auth_token, display_name, membership_id_bungie, membership_typ
     global db_port
 
     list_of_items_to_equip = ""
-    
-    armor = ['Chest Armor', 'Helmet', 'Gauntlets', 'Leg Armor', 'Class Armor']
-    weapons = ['Special Weapons', 'Primary Weapons', 'Heavy Weapons']
-    general = ['Ships', 'Vehicle', 'Ghost', 'Emblems', 'Shaders', 'Emotes', 'Sparrow Horn', 'Artifacts']
-    
+
     conn = None
     conn = psycopg2.connect(host=db_host, database=db_name_alexa, user=db_user, \
                             password=db_pass, port=db_port)
     cur = conn.cursor()
     
-    loadout_encoded = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(membership_id_bungie) + "' AND membership_type =  '" + str(membership_type) + "' AND membership_id = '" + str(membership_id) + "' AND character_id = '" + str(character_id) + "' AND character_race = '" + str(character_race) + "' AND character_gender = '" + str(character_gender) + "' AND character_class = '" + str(character_class) + "' AND loadout_name = '" + str(loadout_name) + "';")
+    loadout_encoded = query_alexa_db("SELECT equipped_items FROM public.loadouts WHERE membership_id_bungie = '" + str(membership_id_bungie) + "' AND membership_type =  '" + str(membership_type) + "' AND membership_id = '" + str(membership_id) + "' AND character_id = '" + str(character_id) + "' AND loadout_name = '" + str(loadout_name) + "';")
     
     if loadout_encoded == []:
         card_title = app_title + " : FAILED : Can't Equip loadout, no loadout found."
@@ -1459,260 +1694,180 @@ def equip_loadout(auth_token, display_name, membership_id_bungie, membership_typ
     print(print_linenumber(), "                    equipped_items  : " + str(equipped_items))
     print(print_linenumber(), "                    loadout_decoded : " + str(loadout_decoded))
 
-    # Make loadout_decoded become equipped_items
-    # DO THIS FOR EXOTICS ONLY / FIRST TO AVOID EXOTIC RACE CONDITION
-    for key, value in enumerate(equipped_items['exotic_item']):
-        #print(print_linenumber(), "                                key : " + str(key))
-        #print(print_linenumber(), "                              value : " + str(value))
-        if value == 1:
-            print(print_linenumber(), "                     value == 1 : ")
-            # EXOTIC ITEM EQUIPPED IN THIS SLOT
-            print(print_linenumber(), "              Exotic Found Equipped : " + str(equipped_items['itemHash'][key]))
-            print(print_linenumber(), "             Replace the Exotic with: " + str(loadout_decoded['itemHash'][key]))
-            itemId = loadout_decoded['itemId'][key]
-            itemHash = loadout_decoded['itemHash'][key]
-            if equipped_items['itemId'][key] == itemId:
-                print(print_linenumber(), "equipped_items['itemId'][key] == itemId : ")
-                # SAME ITEM EQUIPPED AS IN LOADOUT, SO DO NOTHING
-                print(print_linenumber(), "                               INFO : This item in loadout is same as one already equipped, no action necessary: " + str(equipped_items['itemHash'][key]))
-            else:
-                print(print_linenumber(), "equipped_items['itemId'][key] <> itemId : ")
-                # FIND CHARACTER ID OF ITEM TO EQUIP LOCATION
-                location_id = find_item_location(user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, itemId, itemHash)
-                print(print_linenumber(), "location_id : " + str(location_id))
-                if str(location_id) == (user_info['character_zero_id']):
-                    print(print_linenumber(), "location_id == user_info['character_zero_id'] : ")
-                    # THE ITEM IS LOCATED ON THIS CHARACTER, JUST NOT EQUIPPED YET
-                    print(print_linenumber(), "                               INFO : This item is already on this character, no transfer necessary: " + str(equipped_items['itemHash'][key]))
-                else:
-                    print(print_linenumber(), "location_id <> user_info['character_zero_id'] : ")
-                    # DO THE TRANSFER SHUFFLE
-                    bucket_hash = equipped_items['bucket_hash'][key]
-
-                    # armor = ['Chest Armor', 'Helmet', 'Gauntlets', 'Leg Armor', 'Class Armor']
-                    # weapons = ['Special Weapons', 'Primary Weapons', 'Heavy Weapons']
-                    # general = ['Ships', 'Vehicle', 'Ghost', 'Emblems', 'Shaders', 'Emotes', 'Sparrow Horn', 'Artifacts']
-                    
-                    # FIND TYPE OF BUCKET FOR A GENERIC ONE
-                    #bucket_type = next(find_dict_key_by_value(bucket_hashes, str(equipped_items['bucket_hash'][key])), None)
-                    
-                    #bucket_type = next(find_dict_key_by_value(bucket_hashes['Weapons'], str(bucket_hash)), None)
-
-                    if str(bucket_hash) in bucket_hashes_weapons.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_weapons.values() : ")
-                        bucket_type = next(find_dict_key_by_value(bucket_hashes_weapons, str(bucket_hash)), None)
-                        vault_bucket_type = "Weapons"
-                    elif str(bucket_hash) in bucket_hashes_armor.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_armor.values() : ")
-                        bucket_type = next(find_dict_key_by_value(bucket_hashes_armor, str(bucket_hash)), None)
-                        vault_bucket_type = "Armor"
-                    elif str(bucket_hash) in bucket_hashes_general.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_general.values() : ")
-                        bucket_type = next(find_dict_key_by_value(bucket_hashes_general, str(bucket_hash)), None)
-                        vault_bucket_type = "General"
-                    elif str(bucket_hash) in bucket_hashes_subclass.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_subclass.values() : ")
-                        bucket_type = "Subclass"
-                    elif str(bucket_hash) in bucket_hashes_vault.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_vault.values() : ")
-                        bucket_type = "Vault"
-                        vault_bucket_type = "Vault"
-                    else:
-                        print(print_linenumber(), "str(bucket_hash) not found in any bucket_hashes : ")
-                        print(print_linenumber(), "str(bucket_hash) : " + str(bucket_hash))
-                    
-                    if bucket_hash > 0:
-                        if bucket_type in character_zero_inventory['bucketsFull']:
-                            print(print_linenumber(), "bucket_type in character_zero_inventory['bucketsFull'] : ")
-                            print(print_linenumber(), "bucket_type : " + str(bucket_type))
-                            print(print_linenumber(), "character_zero_inventory['bucketsFull'] : " + str(character_zero_inventory['bucketsFull']))
-                            # THIS CHARACTER IS FULL OF THIS TYPE OF ITEM
-                            # NEED TO MAKE THIS CHARACTER NOT FULL
-                        #    if bucket_type in armor:
-                        #        print(print_linenumber(), "           bucket_type in armor : ")
-                        #        vault_bucket_type = "Armor"
-                        #    elif bucket_type in weapons:
-                        #        print(print_linenumber(), "         bucket_type in weapons : ")
-                        #        vault_bucket_type = "Weapons"
-                        #    elif bucket_type in general:
-                        #        print(print_linenumber(), "         bucket_type in general : ")
-                        #        vault_bucket_type = "General"
-                                
-                            free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-    
-                            # VAULT HAS SPACE NOW, TRANSFER A RANDOM ITEM AWAY TO VAULT
-                            counter = 0
-                            for bucket_hash_key, bucket_hash_value in enumerate(character_zero_inventory['bucket_hashes']):
-                                print(print_linenumber(), "                                key : " + str(key))
-                                print(print_linenumber(), "                              value : " + str(value))
-                                print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
-                                print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
-                                if bucket_hash_value == bucket_hash and counter == 0:
-                                    print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
-                                    other_itemId = character_zero_inventory['itemIds'][bucket_hash_key]
-                                    other_itemHash = character_zero_inventory['itemHashes'][bucket_hash_key]
-                                    print(print_linenumber(), "                       other_itemId : " + str(other_itemId))
-                                    print(print_linenumber(), "                     other_itemHash : " + str(other_itemHash))
-                                    if equipped_items['itemId'][key] != other_itemId and loadout_decoded['itemId'][key] != other_itemId and counter == 0:
-                                        print(print_linenumber(), "equipped_items['itemId'][key] != other_itemId and loadout_decoded['itemId'][key] != other_itemId and counter == 0 : ")
-                                        counter = 1
-                                        print(print_linenumber(), "                            counter : " + str(counter))
-                                        # MOVE THIS other_itemId to vault to make room on character
-                                        transfer_item(auth_token, other_itemHash, other_itemId, user_info['character_zero_id'], membership_type, "true")
-                                        mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-    
-                            #if bucket_type in armor:
-                            #    print(print_linenumber(), "           bucket_type in armor : ")
-                            #    vault_bucket_type = "Armor"
-                            #elif bucket_type in weapons:
-                            #    print(print_linenumber(), "         bucket_type in weapons : ")
-                            #    vault_bucket_type = "Weapons"
-                            #elif bucket_type in general:
-                            #    print(print_linenumber(), "         bucket_type in general : ")
-                            #    vault_bucket_type = "General"
-                            free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-                        
-                        # FINALLY MOVE THE REAL ITEM TO VAULT FROM OTHER CHARACTER (-1 is vault location)
-                        if str(location_id) == (user_info['character_one_id']) or str(location_id) == (user_info['character_two_id']):
-                            print(print_linenumber(), "                location_id > 0 : ")
-                            transfer_item(auth_token, itemHash, itemId, location_id, membership_type, "true")
-                            mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)                    
-                        
-                        # THEN MOVE ITEM FROM VAULT TO CHARACTER ZERO
-                        transfer_item(auth_token, itemHash, itemId, user_info['character_zero_id'], membership_type, "false")
-                        mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)     
-
-                # NOW THAT ITEM IS TRANSFERRED TO CHARACTER, EQUIP IT.
-                equip_item(auth_token, itemId, user_info['character_zero_id'], membership_type)
-
-
-    for key, value in enumerate(equipped_items['exotic_item']):
-        print(print_linenumber(), "                                key : " + str(key))
-        print(print_linenumber(), "                              value : " + str(value))
-        if value == 0:
-            print(print_linenumber(), "                     value == 0 : ")
-            # EXOTIC ITEM EQUIPPED IN THIS SLOT
-            print(print_linenumber(), "          Non-Exotic Found Equipped : " + str(equipped_items['itemHash'][key]))
-            print(print_linenumber(), "         Replace the Non-Exotic with: " + str(loadout_decoded['itemHash'][key]))
-            itemId = loadout_decoded['itemId'][key]
-            itemHash = loadout_decoded['itemHash'][key]
-            if equipped_items['itemId'][key] == itemId:
-                print(print_linenumber(), "equipped_items['itemId'][key] == itemId : ")
-                # SAME ITEM EQUIPPED AS IN LOADOUT, SO DO NOTHING
-                print(print_linenumber(), "                               INFO : This item in loadout is same as one already equipped, no action necessary: " + str(equipped_items['itemHash'][key]))
-            else:
-                print(print_linenumber(), "equipped_items['itemId'][key] <> itemId : ")
-                # FIND CHARACTER ID OF ITEM TO EQUIP LOCATION
-                location_id = find_item_location(user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, itemId, itemHash)
-                print(print_linenumber(), "location_id : " + str(location_id))
-                print(print_linenumber(), "user_info['character_zero_id'] : " + str(user_info['character_zero_id']))
-                if str(location_id) == (user_info['character_zero_id']):
-                    print(print_linenumber(), "location_id == user_info['character_zero_id'] : ")
-                    # THE ITEM IS LOCATED ON THIS CHARACTER, JUST NOT EQUIPPED YET
-                    print(print_linenumber(), "                               INFO : This item is already on this character, no transfer necessary: " + str(equipped_items['itemHash'][key]))
-                else:
-                    print(print_linenumber(), "location_id <> user_info['character_zero_id'] : ")
-                    # DO THE TRANSFER SHUFFLE
-                    bucket_hash = equipped_items['bucket_hash'][key]
-
-                    # armor = ['Chest Armor', 'Helmet', 'Gauntlets', 'Leg Armor', 'Class Armor']
-                    # weapons = ['Special Weapons', 'Primary Weapons', 'Heavy Weapons']
-                    # general = ['Ships', 'Vehicle', 'Ghost', 'Emblems', 'Shaders', 'Emotes', 'Sparrow Horn', 'Artifacts']
-                    
-                    # FIND TYPE OF BUCKET FOR A GENERIC ONE
-                    #bucket_type = next(find_dict_key_by_value(bucket_hashes, str(equipped_items['bucket_hash'][key])), None)
-                    if str(bucket_hash) in bucket_hashes_weapons.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_weapons.values() : ")
-                        bucket_type = next(find_dict_key_by_value(bucket_hashes_weapons, str(bucket_hash)), None)
-                        vault_bucket_type = "Weapons"
-                    elif str(bucket_hash) in bucket_hashes_armor.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_armor.values() : ")
-                        bucket_type = next(find_dict_key_by_value(bucket_hashes_armor, str(bucket_hash)), None)
-                        vault_bucket_type = "Armor"
-                    elif str(bucket_hash) in bucket_hashes_general.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_general.values() : ")
-                        bucket_type = next(find_dict_key_by_value(bucket_hashes_general, str(bucket_hash)), None)
-                        vault_bucket_type = "General"
-                    elif str(bucket_hash) in bucket_hashes_subclass.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_subclass.values() : ")
-                        bucket_type = "Subclass"
-                    elif str(bucket_hash) in bucket_hashes_vault.values():
-                        print(print_linenumber(), "str(bucket_hash) in bucket_hashes_vault.values() : ")
-                        bucket_type = "Vault"
-                        vault_bucket_type = "Vault"
-                    else:
-                        print(print_linenumber(), "str(bucket_hash) not found in any bucket_hashes : ")
-                        print(print_linenumber(), "str(bucket_hash) : " + str(bucket_hash))
-                    
-                    if bucket_hash > 0:
-                        if bucket_type in character_zero_inventory['bucketsFull']:
-                            # THIS CHARACTER IS FULL OF THIS TYPE OF ITEM
-                            # NEED TO MAKE THIS CHARACTER NOT FULL
-                        #    if bucket_type in armor:
-                        #        print(print_linenumber(), "           bucket_type in armor : ")
-                        #        vault_bucket_type = "Armor"
-                        #    elif bucket_type in weapons:
-                        #        print(print_linenumber(), "         bucket_type in weapons : ")
-                        #        vault_bucket_type = "Weapons"
-                        #    elif bucket_type in general:
-                        #        print(print_linenumber(), "         bucket_type in general : ")
-                        #        vault_bucket_type = "General"
-                                
-                            free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-    
-                            # VAULT HAS SPACE NOW, TRANSFER A RANDOM ITEM AWAY TO VAULT
-                            counter = 0
-                            for bucket_hash_key, bucket_hash_value in enumerate(character_zero_inventory['bucket_hashes']):
-                                #print(print_linenumber(), "                                key : " + str(key))
-                                #print(print_linenumber(), "                              value : " + str(value))
-                                #print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
-                                #print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
-                                if bucket_hash_value == bucket_hash and counter == 0:
-                                    print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
-                                    other_itemId = character_zero_inventory['itemIds'][bucket_hash_key]
-                                    other_itemHash = character_zero_inventory['itemHashes'][bucket_hash_key]
-                                    print(print_linenumber(), "                       other_itemId : " + str(other_itemId))
-                                    print(print_linenumber(), "                     other_itemHash : " + str(other_itemHash))
-                                    if equipped_items['itemId'][key] != other_itemId and loadout_decoded['itemId'][key] != other_itemId and counter == 0:
-                                        print(print_linenumber(), "equipped_items['itemId'][key] != other_itemId and loadout_decoded['itemId'][key] != other_itemId and counter == 0 : ")
-                                        counter = 1
-                                        print(print_linenumber(), "                            counter : " + str(counter))
-                                        # MOVE THIS other_itemId to vault to make room on character
-                                        transfer_item(auth_token, other_itemHash, other_itemId, user_info['character_zero_id'], membership_type, "true")
-                                        mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-    
-                            #if bucket_type in armor:
-                            #    print(print_linenumber(), "           bucket_type in armor : ")
-                            #    vault_bucket_type = "Armor"
-                            #elif bucket_type in weapons:
-                            #    print(print_linenumber(), "         bucket_type in weapons : ")
-                            #    vault_bucket_type = "Weapons"
-                            #elif bucket_type in general:
-                            #    print(print_linenumber(), "         bucket_type in general : ")
-                            #    vault_bucket_type = "General"
-                            free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
-                        
-                        # FINALLY MOVE THE REAL ITEM TO VAULT FROM OTHER CHARACTER (-1 is vault location)
-                        if str(location_id) == (user_info['character_one_id']) or str(location_id) == (user_info['character_two_id']):
-                            print(print_linenumber(), "                location_id > 0 : ")
-                            transfer_item(auth_token, itemHash, itemId, location_id, membership_type, "true")
-                            mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)                    
-                        
-                        # THEN MOVE ITEM FROM VAULT TO CHARACTER ZERO
-                        transfer_item(auth_token, itemHash, itemId, user_info['character_zero_id'], membership_type, "false")
-                        mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)     
-
-                # NOW THAT ITEM IS TRANSFERRED TO CHARACTER, EQUIP IT.
-                equip_item(auth_token, itemId, user_info['character_zero_id'], membership_type)
-        
     cur.close()
     conn.commit()
     conn.close()
+    
+    # Make loadout_decoded become equipped_items
+    # DO THIS FOR EXOTICS FIRST TO AVOID EXOTIC RACE CONDITION
+    for x in range(0,2):    
+        for key, value in enumerate(equipped_items['exotic_item']):
+            #print(print_linenumber(), "                                key : " + str(key))
+            #print(print_linenumber(), "                              value : " + str(value))
+            if value == x:
+                print(print_linenumber(), "                     value == " + str(x) + " : ")
+                # IF ONE, EXOTIC ITEM EQUIPPED IN THIS SLOT
+                if x == 1:
+                    print(print_linenumber(), "                    Exotic Equipped : " + str(equipped_items['itemHash'][key]))
+                    print(print_linenumber(), "                     Replace Exotic : " + str(loadout_decoded['itemHash'][key]))
+                elif x == 0:
+                    print(print_linenumber(), "             Non-Exotic Equipped : " + str(equipped_items['itemHash'][key]))
+                    print(print_linenumber(), "              Replace Non-Exotic : " + str(loadout_decoded['itemHash'][key]))
+                else:
+                    print(print_linenumber(), "ERROR : An item should always be exotic or non-exotic, you should never see this.")
+                itemId = loadout_decoded['itemId'][key]
+                itemHash = loadout_decoded['itemHash'][key]
+                if equipped_items['itemId'][key] == itemId:
+                    #print(print_linenumber(), "equipped_items['itemId'][key] == itemId : ")
+                    # SAME ITEM EQUIPPED AS IN LOADOUT, SO DO NOTHING
+                    print(print_linenumber(), "                               INFO : This item in loadout is same as one already equipped, no action necessary: " + str(equipped_items['itemHash'][key]))
+                else:
+                    #print(print_linenumber(), "equipped_items['itemId'][key] <> itemId : ")
+                    # FIND CHARACTER ID OF ITEM TO EQUIP LOCATION
+                    location_id = find_item_location(user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, itemId, itemHash)
+                    #print(print_linenumber(), "location_id : " + str(location_id))
+                    #print(print_linenumber(), "user_info['character_zero_id'] : " + str(user_info['character_zero_id']))
+                    if str(location_id) == (user_info['character_zero_id']):
+                        #print(print_linenumber(), "location_id == user_info['character_zero_id'] : ")
+                        # THE ITEM IS LOCATED ON THIS CHARACTER, JUST NOT EQUIPPED YET
+                        print(print_linenumber(), "                               INFO : This item is already on this character, no transfer necessary: " + str(equipped_items['itemHash'][key]))
+                    else:
+                        #print(print_linenumber(), "location_id <> user_info['character_zero_id'] : ")
+                        # DO THE TRANSFER SHUFFLE
+                        bucket_hash = equipped_items['bucket_hash'][key]
 
+                        # FIND TYPE OF BUCKET FOR A GENERIC ONE
+                        #bucket_type = next(find_dict_key_by_value(bucket_hashes, str(equipped_items['bucket_hash'][key])), None)
+                        if str(bucket_hash) in bucket_hashes_weapons.values():
+                            #print(print_linenumber(), "str(bucket_hash) in bucket_hashes_weapons.values() : ")
+                            bucket_type = next(find_dict_key_by_value(bucket_hashes_weapons, str(bucket_hash)), None)
+                            vault_bucket_type = "Weapons"
+                        elif str(bucket_hash) in bucket_hashes_armor.values():
+                            #print(print_linenumber(), "str(bucket_hash) in bucket_hashes_armor.values() : ")
+                            bucket_type = next(find_dict_key_by_value(bucket_hashes_armor, str(bucket_hash)), None)
+                            vault_bucket_type = "Armor"
+                        elif str(bucket_hash) in bucket_hashes_general.values():
+                            #print(print_linenumber(), "str(bucket_hash) in bucket_hashes_general.values() : ")
+                            bucket_type = next(find_dict_key_by_value(bucket_hashes_general, str(bucket_hash)), None)
+                            vault_bucket_type = "General"
+                        elif str(bucket_hash) in bucket_hashes_subclass.values():
+                            #print(print_linenumber(), "str(bucket_hash) in bucket_hashes_subclass.values() : ")
+                            bucket_type = "Subclass"
+                        elif str(bucket_hash) in bucket_hashes_vault.values():
+                            #print(print_linenumber(), "str(bucket_hash) in bucket_hashes_vault.values() : ")
+                            bucket_type = "Vault"
+                            vault_bucket_type = "Vault"
+                        else:
+                            print(print_linenumber(), "str(bucket_hash) not found in any bucket_hashes : ")
+                            print(print_linenumber(), "str(bucket_hash) : " + str(bucket_hash))
+                        
+                        if bucket_hash > 0:
+                            if bucket_type in character_zero_inventory['bucketsFull']:
+                                # THIS CHARACTER IS FULL OF THIS TYPE OF ITEM
+                                # NEED TO MAKE THIS CHARACTER NOT FULL
+
+                                free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes)
+                                mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
+                                
+                                # VAULT HAS SPACE NOW, TRANSFER A RANDOM ITEM AWAY TO VAULT
+                                counter = 0
+                                for bucket_hash_key, bucket_hash_value in enumerate(character_zero_inventory['bucket_hashes']):
+                                    #print(print_linenumber(), "                                key : " + str(key))
+                                    #print(print_linenumber(), "                              value : " + str(value))
+                                    #print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
+                                    #print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
+                                    if bucket_hash_value == bucket_hash and counter == 0:
+                                        #print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
+                                        other_itemId = character_zero_inventory['itemIds'][bucket_hash_key]
+                                        other_itemHash = character_zero_inventory['itemHashes'][bucket_hash_key]
+                                        print(print_linenumber(), "                       other_itemId : " + str(other_itemId))
+                                        print(print_linenumber(), "                     other_itemHash : " + str(other_itemHash))
+                                        if equipped_items['itemId'][key] != other_itemId and loadout_decoded['itemId'][key] != other_itemId and counter == 0:
+                                            #print(print_linenumber(), "equipped_items['itemId'][key] != other_itemId and loadout_decoded['itemId'][key] != other_itemId and counter == 0 : ")
+                                            counter = 1
+                                            #print(print_linenumber(), "                            counter : " + str(counter))
+                                            # MOVE THIS other_itemId to vault to make room on character
+                                            transfer_item(auth_token, other_itemHash, other_itemId, user_info['character_zero_id'], membership_type, "true")
+                                            mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
+
+                                free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes)
+                                mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
+                                
+                            # FINALLY MOVE THE REAL ITEM TO VAULT FROM OTHER CHARACTER (-1 is vault location)
+                            if str(location_id) == (user_info['character_one_id']) or str(location_id) == (user_info['character_two_id']):
+                                #print(print_linenumber(), "                location_id > 0 : ")
+                                transfer_item(auth_token, itemHash, itemId, location_id, membership_type, "true")
+                                mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)                    
+                            
+                            if int(location_id) == 0:
+                                print(print_linenumber(), "                           itemHash : " + str(itemHash))
+                                print(print_linenumber(), "                             itemId : " + str(itemId))
+                                print(print_linenumber(), "INFO : It appears this item has been deleted.  Can't find it.")
+                            elif int(location_id) == -1:
+                                # THEN MOVE ITEM FROM VAULT TO CHARACTER ZERO (-1 is vault location)
+                                transfer_item(auth_token, itemHash, itemId, user_info['character_zero_id'], membership_type, "false")
+                                mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)     
+                            else:
+                                print(print_linenumber(), "                           itemHash : " + str(itemHash))
+                                print(print_linenumber(), "                             itemId : " + str(itemId))
+                                print(print_linenumber(), "ERROR : Should never see this, all other possibilities for item location should be accounted for.")                                
+    
+                    # NOW THAT ITEM IS TRANSFERRED TO CHARACTER, EQUIP IT.
+                    if list_of_items_to_equip:
+                        list_of_items_to_equip = list_of_items_to_equip + ',"' + str(itemId) + '"'
+                    else:
+                        list_of_items_to_equip = '"' + str(itemId) + '"'
+
+    equip_items(auth_token, list_of_items_to_equip, user_info['character_zero_id'], membership_type)                    
     card_title = app_title + " : SUCCESS : Loadout Equipped."
     if loadout_name.upper() == "TRIALS":
         speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
         ".  Don't forget to buy your boons."
+    elif loadout_name.upper() == "IRON_BANNER":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Show them no mercy."
+    elif loadout_name.upper() == "COMPETITIVE_PLAY":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Show them no mercy."
+    elif loadout_name.upper() == "QUICK_PLAY":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Have Fun."
+    elif loadout_name.upper() == "STRIKE":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Defeat the minons of the darkness."
+    elif loadout_name.upper() == "PATROL":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Have Fun."
+    elif loadout_name.upper() == "FAVORITE":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  It's amazing!"
+    elif loadout_name.upper() == "DESOLATE":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  You're Taken now."
+    elif loadout_name.upper() == "VAULT_OF_GLASS":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Atheon will fall."
+    elif loadout_name.upper() == "CROTAS_END":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Who's going to carry the sword?"
+    elif loadout_name.upper() == "KINGS_FALL":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Go slay The Taken King."
+    elif loadout_name.upper() == "WRATH_OF_THE_MACHINE":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Siva is no match for you."
+    elif loadout_name.upper() == "LEVIATHAN":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Enter the belly of the beast."
+    elif loadout_name.upper() == "ARC_BURN":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Electrifying isn't it?"
+    elif loadout_name.upper() == "SOLAR_BURN":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Burn your enemies with fire."
+    elif loadout_name.upper() == "VOID_BURN":
+        speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + \
+        ".  Destroy minions with the power of void."
     else:
         speech = "Loadout Equipped for " + loadout_name.replace("_", " ").title() + "."
     
@@ -1720,7 +1875,7 @@ def equip_loadout(auth_token, display_name, membership_id_bungie, membership_typ
     return alexa_speak(card_title, speech, end_session)
 
 
-def free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault):
+def free_vault_space(auth_token, display_name, membership_id_bungie, membership_type, membership_id, character_id, character_race, character_gender, character_class, loadout_name, equipped_items, user_info, character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, vault_bucket_type, bucket_type, bucket_hash, bucket_hashes):
     print(print_linenumber(), "     FUNCTION :    free_vault_space : " + str(datetime.datetime.now()).split('.')[0])
     print(print_linenumber(), "              :    free_vault_space          : display_name             : " + str(display_name))
     print(print_linenumber(), "              :    free_vault_space          : membership_id_bungie     : " + str(membership_id_bungie))
@@ -1736,22 +1891,22 @@ def free_vault_space(auth_token, display_name, membership_id_bungie, membership_
     print(print_linenumber(), "              :    free_vault_space          : bucket_type              : " + str(bucket_type))
     print(print_linenumber(), "              :    free_vault_space          : bucket_hash              : " + str(bucket_hash))
     print(print_linenumber(), "              :    free_vault_space          : bucket_hashes            : " + str(bucket_hashes))
-    print(print_linenumber(), "              :    free_vault_space          : character_zero_inventory : " + str(character_zero_inventory))
-    print(print_linenumber(), "              :    free_vault_space          : character_one_inventory  : " + str(character_one_inventory))
-    print(print_linenumber(), "              :    free_vault_space          : character_two_inventory  : " + str(character_two_inventory))
-    print(print_linenumber(), "              :    free_vault_space          : vault_inventory          : " + str(vault_inventory))
+    #print(print_linenumber(), "              :    free_vault_space          : character_zero_inventory : " + str(character_zero_inventory))
+    #print(print_linenumber(), "              :    free_vault_space          : character_one_inventory  : " + str(character_one_inventory))
+    #print(print_linenumber(), "              :    free_vault_space          : character_two_inventory  : " + str(character_two_inventory))
+    #print(print_linenumber(), "              :    free_vault_space          : vault_inventory          : " + str(vault_inventory))
 
     global main_domain
     global api_key  
     
     if vault_bucket_type in vault_inventory['bucketsFull']:
-        print(print_linenumber(), "vault_bucket_type in vault_inventory['bucketsFull'] : ")
+        #print(print_linenumber(), "vault_bucket_type in vault_inventory['bucketsFull'] : ")
         # VAULT IS FULL FOR THIS TYPE PIECES
         if bucket_type in character_one_inventory['bucketsFull']:
-            print(print_linenumber(), "bucket_type in character_one_inventory['bucketsFull'] : ")
+            #print(print_linenumber(), "bucket_type in character_one_inventory['bucketsFull'] : ")
             # DAMN CHARACTER ONE IS FULL OF THIS TYPE OF ITEM AS WELL
             if bucket_type in character_two_inventory['bucketsFull']:
-                print(print_linenumber(), "bucket_type in character_two_inventory['bucketsFull'] : ")
+                #print(print_linenumber(), "bucket_type in character_two_inventory['bucketsFull'] : ")
                 # SHIT ALL CHARACTERS FULL OF THIS TYPE OF ITEM AND SO IS VAULT
                 # COULD MOVE OTHER ITEMS OF DIFFERENT TYPE FROM VAULT TO OTHER CHARACERS, BUT FOR NOW GIVE UP!
                 # vault_inventory['bucketTypeHashes']
@@ -1762,51 +1917,200 @@ def free_vault_space(auth_token, display_name, membership_id_bungie, membership_
                 end_session = True
                 return alexa_speak(card_title, speech, end_session)     
             else:
-                print(print_linenumber(), "bucket_type not in character_two_inventory['bucketsFull'] : ")
-                print(print_linenumber(), "character_two_inventory['bucketsFull'] is not full of this bucket_type : ")
+                #print(print_linenumber(), "bucket_type not in character_two_inventory['bucketsFull'] : ")
+                #print(print_linenumber(), "character_two_inventory['bucketsFull'] is not full of this bucket_type : ")
                 # MOVE A RANDOM ITEM OF THIS TYPE FROM VAULT TO CHARACTER TWO
                 counter = 0
-                print(print_linenumber(), "                            counter : " + str(counter))
+                #print(print_linenumber(), "                            counter : " + str(counter))
                 for bucket_hash_key, bucket_hash_value in enumerate(vault_inventory['bucketTypeHashes']):
-                    print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
-                    print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
+                    #print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
+                    #print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
                     if bucket_hash_value == bucket_hash and counter == 0:
-                        print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
+                        #print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
                         other_itemId = vault_inventory['itemIds'][bucket_hash_key]
                         other_itemHash = vault_inventory['itemHashes'][bucket_hash_key]
                         print(print_linenumber(), "                       other_itemId : " + str(other_itemId))
                         print(print_linenumber(), "                     other_itemHash : " + str(other_itemHash))
                         if equipped_items['itemId'][bucket_hash_key] != other_itemId and loadout_decoded['itemId'][bucket_hash_key] != other_itemId and counter == 0:
-                            print(print_linenumber(), "equipped_items['itemId'][bucket_hash_key] != other_itemId and loadout_decoded['itemId'][bucket_hash_key] != other_itemId and counter == 0 : ")
+                            #print(print_linenumber(), "equipped_items['itemId'][bucket_hash_key] != other_itemId and loadout_decoded['itemId'][bucket_hash_key] != other_itemId and counter == 0 : ")
                             counter = 1
-                            print(print_linenumber(), "                            counter : " + str(counter))
+                            #print(print_linenumber(), "                            counter : " + str(counter))
                             # MOVE THIS other_itemId to character two to make room in vault.
                             transfer_item(auth_token, other_itemHash, other_itemId, user_info['character_two_id'], membership_type, "false")
-                            mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
+                            #mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
         else:
             # MOVE A RANDOM ITEM OF THIS TYPE FROM VAULT TO CHARACTER ONE
             counter = 0
-            print(print_linenumber(), "                            counter : " + str(counter))
+            #print(print_linenumber(), "                            counter : " + str(counter))
             for bucket_hash_key, bucket_hash_value in enumerate(vault_inventory['bucketTypeHashes']):
-                print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
-                print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
+                #print(print_linenumber(), "                    bucket_hash_key : " + str(bucket_hash_key))
+                #print(print_linenumber(), "                  bucket_hash_value : " + str(bucket_hash_value))
                 if bucket_hash_value == bucket_hash and counter == 0:
-                    print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
+                    #print(print_linenumber(), "bucket_hash_value == bucket_hash and counter == 0 : ")
                     other_itemId = vault_inventory['itemIds'][bucket_hash_key]
                     other_itemHash = vault_inventory['itemHashes'][bucket_hash_key]
                     print(print_linenumber(), "                       other_itemId : " + str(other_itemId))
                     print(print_linenumber(), "                     other_itemHash : " + str(other_itemHash))
                     if equipped_items['itemId'][bucket_hash_key] != other_itemId and loadout_decoded['itemId'][bucket_hash_key] != other_itemId and counter == 0:
-                        print(print_linenumber(), "equipped_items['itemId'][bucket_hash_key] != other_itemId and loadout_decoded['itemId'][bucket_hash_key] != other_itemId and counter == 0 : ")
+                        #print(print_linenumber(), "equipped_items['itemId'][bucket_hash_key] != other_itemId and loadout_decoded['itemId'][bucket_hash_key] != other_itemId and counter == 0 : ")
                         counter = 1
-                        print(print_linenumber(), "                            counter : " + str(counter))
+                        #print(print_linenumber(), "                            counter : " + str(counter))
                         # MOVE THIS other_itemId to character one to make room in vault.
                         transfer_item(auth_token, other_itemHash, other_itemId, user_info['character_one_id'], membership_type, "false")
-                        mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
+                        #mark_full_inventories(character_zero_inventory, character_one_inventory, character_two_inventory, vault_inventory, bucket_hashes, bucket_hashes_weapons, bucket_hashes_armor, bucket_hashes_general, bucket_hashes_vault)
     return
 
 
-def transfer_item(auth_token, itemHash, itemId, character_id, membership_type, to_vault):
+def split_item(characters, max_stack, itemHash):
+
+    characters = 3
+    max_stack = 100
+
+    total = 0
+    character_zero_total = 0
+    character_one_total = 0
+    character_two_total = 0
+    vault_total = 0
+    
+    consumables = {'Black Wax Idol': 1043138475, 'Blue Polyphage': 1772853454, 'Ether Seeds':3783295803, 'Resupply Codes':3446457162, 'House Banners':269776572, 'Silken Codex':3632619276, 'Axiomatic Beads':2904517731, 'Network Keys':1932910919, 'Three of Coins':417308266, 'Ammo Synth':2180254632, 'Special Ammo Synth':928169143, 'Heavy Ammo Synth':211861343, 'Primary Telemetry':705234570, 'Special Telemetry':3371478409, 'Heavy Telemetry':2929837733, 'Auto Rifle Telemetry':4159731660, 'Hand Cannon Telemetry':846470091, 'Pulse Rifle Telemetry':2610276738, 'Scout Rifle Telemetry':323927027, 'Fusion Rifle Telemetry':729893597, 'Shotgun Telemetry':4141501356, 'Sniper Rifle Telemetry':927802664, 'Machine Gun Telemetry':1485751393, 'Rocket Launcher Telemetry':3036931873, 'Vanguard Reputation Booster':2220921114, 'Crucible Reputation Booster':1500229041, 'House of Judgment Reputation Booster':1603376703, 'Splicer Intel Relay':2575095887, 'Splicer Cache Key':3815757277, 'Splicer Key':4244618453}
+    
+    materials = {'Helium': 1797491610, 'Relic Iron': 3242866270, 'Spinmetal': 2882093969, 'Spirit Bloom': 2254123540, 'Wormspore': 3164836592, 'Hadium Flakes': 3164836593, 'Exotic Shard': 452597397, 'Armor Materials': 1542293174, 'Weapon Materials': 1898539128, 'Motes of Light': 937555249, 'Strange Coins': 1738186005, 'Ascendant Shards': 258181985, 'Ascendant Energy': 1893498008, 'Radiant Shards': 769865458, 'Radiant Energy': 616706469, 'Reciprocal Rune': 342707701, 'Stolen Rune': 342707700, 'Antiquated Rune': 2906158273, 'Stolen Rune (Charging)': 2620224196, 'Antiquated Rune (Charging)': 2906158273}
+    
+    itemHash = consumables['Heavy Ammo Synth']
+    
+    indices = [i for i, x in enumerate(character_zero_inventory.get('itemHashes')) if x == int(itemHash)]
+    for key, value in enumerate(indices):
+      character_zero_total = character_zero_total + character_zero_inventory.get('quantities')[value]
+    
+    indices = [i for i, x in enumerate(character_one_inventory.get('itemHashes')) if x == int(itemHash)]
+    for key, value in enumerate(indices):
+      character_one_total = character_one_total + character_one_inventory.get('quantities')[value]
+    
+    indices = [i for i, x in enumerate(character_two_inventory.get('itemHashes')) if x == int(itemHash)]
+    for key, value in enumerate(indices):
+      character_two_total = character_two_total + character_two_inventory.get('quantities')[value]
+    
+    indices = [i for i, x in enumerate(vault_inventory.get('itemHashes')) if x == int(itemHash)]
+    for key, value in enumerate(indices):
+      vault_total = vault_total + vault_inventory.get('quantities')[value]
+    
+    total = character_zero_total + character_one_total + character_two_total + vault_total
+    
+    remainder = total%characters
+    each_character = (total - remainder) / characters
+    final_vault = total - (each_character * characters)
+    
+    if each_character >= max_stack:
+      final_vault = final_vault + ((each_character - max_stack) * characters)
+      each_character = max_stack
+      remainder = 0
+    
+    if characters == 2 and character_two_total > 0:
+      print("move " + str(character_two_total) + " from character two to vault")
+      vault_total = vault_total + character_two_total
+      character_two_total = character_two_total - character_two_total
+    
+    if characters == 1 and character_one_total > 0:
+      print("move " + str(character_two_total) + " from character two to vault")
+      vault_total = vault_total + character_two_total
+      character_two_total = character_two_total - character_two_total
+      print("move " + str(character_one_total) + " from character one to vault")
+      vault_total = vault_total + character_one_total
+      character_one_total = character_one_total - character_one_total
+    
+    print(" ")
+    print("character_zero_total: " + str(character_zero_total))
+    print(" character_one_total: " + str(character_one_total))
+    print(" character_two_total: " + str(character_two_total))
+    print("         vault_total: " + str(vault_total))
+    print(" ")
+    print("               total: " + str(total))
+    print(" ")
+    print("           remainder: " + str(remainder))
+    print("     each_character : " + str(each_character))
+    print(" ")
+    # move to or from vault as needed, giving remainder to character zero
+    # if character inventory is full, move theirs to vault
+    
+    if character_zero_total > each_character:
+      move_away = character_zero_total - each_character
+      if character_one_total < each_character and characters > 1:
+        print("move " + str(move_away) + " from character zero to character one")
+        character_zero_total = character_zero_total - move_away
+        character_one_total = character_one_total + move_away
+      elif character_two_total < each_character and characters > 2:
+        print("move " + str(move_away) + " from character zero to character two")
+        character_zero_total = character_zero_total - move_away
+        character_two_total = character_two_total + move_away
+      else:
+        print("move " + str(move_away) + " from character zero to vault")
+        character_zero_total = character_zero_total - move_away
+        vault_total = vault_total + move_away
+    
+    if character_one_total > each_character:
+      move_away = character_one_total - each_character
+      if character_zero_total < each_character:
+        print("move " + str(move_away) + " from character one to character zero")
+        character_one_total = character_one_total - move_away
+        character_zero_total = character_zero_total + move_away
+      elif character_two_total < each_character and characters > 2:
+        print("move " + str(move_away) + " from character one to character two")
+        character_one_total = character_one_total - move_away
+        character_two_total = character_two_total + move_away
+      else:
+        print("move " + str(move_away) + " from character one to vault")
+        character_one_total = character_one_total - move_away
+        vault_total = vault_total + move_away
+    
+    if character_two_total > each_character:
+      move_away = character_two_total - each_character
+      if character_zero_total < each_character:
+        print("move " + str(move_away) + " from character two to character zero")
+        character_two_total = character_two_total - move_away
+        character_zero_total = character_zero_total + move_away
+      elif character_one_total < each_character and characters > 1:
+        print("move " + str(move_away) + " from character two to character one")
+        character_two_total = character_two_total - move_away
+        character_one_total = character_one_total + move_away
+      else:
+        print("move " + str(move_away) + " from character two to vault")
+        character_two_total = character_two_total - move_away
+        vault_total = vault_total + move_away
+    
+    if character_zero_total < each_character:
+      gimmie = each_character - character_zero_total
+      if vault_total >= gimmie:
+        print("move " + str(gimmie) + " from vault to character zero")
+        vault_total = vault_total - gimmie
+        character_zero_total = character_zero_total + gimmie
+    
+    if character_one_total < each_character and characters > 1:
+      gimmie = each_character - character_one_total
+      if vault_total >= gimmie:
+        print("move " + str(gimmie) + " from vault to character one")
+        vault_total = vault_total - gimmie
+        character_one_total = character_one_total + gimmie
+    
+    if character_two_total < each_character and characters > 2:
+      gimmie = each_character - character_two_total
+      if vault_total >= gimmie:
+        print("move " + str(gimmie) + " from vault to character two")
+        vault_total = vault_total - gimmie
+        character_two_total = character_two_total + gimmie
+    
+    print(" ")
+    print("character_zero_total: " + str(character_zero_total))
+    print(" character_one_total: " + str(character_one_total))
+    print(" character_two_total: " + str(character_two_total))
+    print("         vault_total: " + str(vault_total))
+    print(" ")
+    print("               total: " + str(total))
+    print(" ")
+
+    return
+
+
+def transfer_item(auth_token, itemHash, itemId, character_id, membership_type, to_vault, quantity="1"):
     print(print_linenumber(), "     FUNCTION :    transfer_item    : " + str(datetime.datetime.now()).split('.')[0])
     print(print_linenumber(), "              :    transfer_item             : itemHash                 : " + str(itemHash))
     print(print_linenumber(), "              :    transfer_item             : itemId                   : " + str(itemId))
@@ -1814,29 +2118,20 @@ def transfer_item(auth_token, itemHash, itemId, character_id, membership_type, t
     print(print_linenumber(), "              :    transfer_item             : membership_type          : " + str(membership_type))
     print(print_linenumber(), "              :    transfer_item             : to_vault                 : " + str(to_vault))
   
-    url = main_domain + "/Platform/Destiny/TransferItem/"
-    data='{"itemReferenceHash":"' + str(itemHash) + '","stackSize":"' + str(1) + '","transferToVault":"' + str(to_vault) + '","itemId":"' + str(itemId) + '","characterId":"' + str(character_id) + '","membershipType":' + str(membership_type) + '}'
-    response = call_api(url, api_key, auth_token, data, method="POST")
+    endpoint = "transfer_item"
+    if int(quantity) > 1:
+        data='{"itemReferenceHash":"' + str(itemHash) + '","stackSize":"' + str(quantity) + '","transferToVault":"' + str(to_vault) + '","characterId":"' + str(character_id) + '","membershipType":' + str(membership_type) + '}'
+    else:   
+        data='{"itemReferenceHash":"' + str(itemHash) + '","stackSize":"' + str(1) + '","transferToVault":"' + str(to_vault) + '","itemId":"' + str(itemId) + '","characterId":"' + str(character_id) + '","membershipType":' + str(membership_type) + '}'
+    
+    response = call_api(endpoint, auth_token, data, method="POST")
+    
     print(print_linenumber(), "                       data : " + str(data))
     print(print_linenumber(), "                   response : " + str(response))
     
     # IF LOCATION IS FULL
     # response : {u'ThrottleSeconds': 0, u'ErrorCode': 1642, u'ErrorStatus': u'DestinyNoRoomInDestination', u'Message': u'There are no item slots available to transfer this item.', u'Response': 0, u'MessageData': {}}
     
-    return response
-    
-
-def equip_item(auth_token, itemId, character_id, membership_type):
-    print(print_linenumber(), "     FUNCTION :    equip_item       : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              :    equip_item                : itemId                   : " + str(itemId))
-    print(print_linenumber(), "              :    equip_item                : character_id             : " + str(character_id))
-    print(print_linenumber(), "              :    equip_item                : membership_type          : " + str(membership_type))
-      
-    url = main_domain + "/Platform/Destiny/EquipItem/"
-    data='{"itemId":' + str(itemId) + ',"characterId":"' + str(character_id) + '","membershipType":' + str(membership_type) + '}'
-    response = call_api(url, api_key, auth_token, data, method="POST")
-    print(print_linenumber(), "                       data : " + str(data))
-    print(print_linenumber(), "                   response : " + str(response))
     return response
 
 
@@ -1846,18 +2141,18 @@ def equip_items(auth_token, itemIds, character_id, membership_type):
     print(print_linenumber(), "              :    equip_items               : character_id             : " + str(character_id))
     print(print_linenumber(), "              :    equip_items               : membership_type          : " + str(membership_type))
    
-    url = main_domain + "/Platform/Destiny/EquipItems/"
-    data='{"itemIds":["' + str(itemIds) + '"],"characterId":"' + str(character_id) + '","membershipType":' + str(membership_type) + '}'
-    response = call_api(url, api_key, auth_token, data, method="POST")
-    print(print_linenumber(), "                       data : " + str(data))
-    print(print_linenumber(), "                   response : " + str(response))
+    endpoint = "equip_items"
+    data='{"itemIds":[' + str(itemIds) + '],"characterId":"' + str(character_id) + '","membershipType":' + str(membership_type) + '}'
+    response = call_api(endpoint, auth_token, data, method="POST")
+    #print(print_linenumber(), "                       data : " + str(data))
+    #print(print_linenumber(), "                   response : " + str(response))
     return response
     
 
 def find_dict_key_by_value(input_dict, value):
-    print(print_linenumber(), "     FUNCTION :    find_dict_key_by_value    : " + str(datetime.datetime.now()).split('.')[0])
-    print(print_linenumber(), "              :    find_dict_key_by_value    : input_dict               : " + str(input_dict))
-    print(print_linenumber(), "              :    find_dict_key_by_value    : value                    : " + str(value))
+    #print(print_linenumber(), "     FUNCTION :    find_dict_key_by_value    : " + str(datetime.datetime.now()).split('.')[0])
+    #print(print_linenumber(), "              :    find_dict_key_by_value    : input_dict               : " + str(input_dict))
+    #print(print_linenumber(), "              :    find_dict_key_by_value    : value                    : " + str(value))
     
     for k, v in input_dict.items():
         if v == value:
@@ -1872,7 +2167,16 @@ def print_linenumber():
 
 if __name__ == '__main__':
     print(print_linenumber(), "     FUNCTION :  __main__           : " + str(datetime.datetime.now()).split('.')[0])
+    '''sample_event_raw = ast.literal_eval("{u'session': {u'new': True, u'sessionId': u'amzn1.echo-api.session.82842f35-f1ec-46cc-a7ea-3b4d690a1a59', u'user': {u'userId': u'amzn1.ask.account.AE6XQKWUJ7OJLF2LNQSOHHOTDJVPKVSZC3AYEHT2T4DTU22QQ2JB3XWVKG7R3CIEKEE23D5OVJGMOQXDIRTOM4EH5GGWBJ64NVDREVM6NSWQLPVNV2K2PIOZW2UH4EAHDQMPWRGEYVBOZ4NG3BVIP4DEMNNQM2MQRXZ5TCKGKWAVID434TGEPL4PF2FTHVVUCPUPSCE35UA5V6Q', u'accessToken': u'CPwYEoYCACAlaWzky+XTdL+Cd7SRwW5ZA/h154UjCWplPxMd1FM2vOAAAAAlLKPom63/gmverbBIZy72Z1tJr8RbrKe9r5/XYvtBxF/8panS134h/VgNn4YuzwtxcjcVx8hvpDFuIpI6ELPFkxQbIg01W/cBqngNgwyP6piKho8WIsPCYstpvpaZKnsEFd6ta9IgNISgwXqJ2i1Eh4lic4FXdEaZ0KuQ9cC0jiNEpLdfa6hV/9pbQqgQ4P2ewBOsDlC4iAvvjyEuyL8MX8JmJsZ+n5Di3y2egCuIUd2xOGnuBIpAsdEy68Iv3yc1zUVd/vBQKemmNmtnmDw7iEWo5Yx7AIFMWRg214MCvA=='}, u'application': {u'applicationId': u'amzn1.ask.skill.8f96749d-8fa5-4a44-8f17-3bd7f7e69aa8'}}, u'version': u'1.0', u'request': {u'locale': u'en-US', u'timestamp': u'2017-08-04T23:24:09Z', u'type': u'LaunchRequest', u'requestId': u'amzn1.echo-api.request.18981e59-2980-42ac-bfe7-7ede53d0c2c3'}, u'context': {u'AudioPlayer': {u'playerActivity': u'IDLE'}, u'System': {u'device': {u'deviceId': u'amzn1.ask.device.AEAVHQA2YUJGD6TJ5LMLYVXX43QDRSGVOQ7OCAANNALBE5SDRB4QBPHKLLX4YRAP4AFLIGKGXJHZWIMO7CRKU4NEDIOWOHYER22W7EPXS3RJNO7ZM2BMA2BVWG5L47ANCXJLXWTICGV3GTAIAJRJHZ6EE3XA', u'supportedInterfaces': {u'AudioPlayer': {}}}, u'application': {u'applicationId': u'amzn1.ask.skill.8f96749d-8fa5-4a44-8f17-3bd7f7e69aa8'}, u'user': {u'userId': u'amzn1.ask.account.AE6XQKWUJ7OJLF2LNQSOHHOTDJVPKVSZC3AYEHT2T4DTU22QQ2JB3XWVKG7R3CIEKEE23D5OVJGMOQXDIRTOM4EH5GGWBJ64NVDREVM6NSWQLPVNV2K2PIOZW2UH4EAHDQMPWRGEYVBOZ4NG3BVIP4DEMNNQM2MQRXZ5TCKGKWAVID434TGEPL4PF2FTHVVUCPUPSCE35UA5V6Q', u'accessToken': u'CPwYEoYCACAlaWzky+XTdL+Cd7SRwW5ZA/h154UjCWplPxMd1FM2vOAAAAAlLKPom63/gmverbBIZy72Z1tJr8RbrKe9r5/XYvtBxF/8panS134h/VgNn4YuzwtxcjcVx8hvpDFuIpI6ELPFkxQbIg01W/cBqngNgwyP6piKho8WIsPCYstpvpaZKnsEFd6ta9IgNISgwXqJ2i1Eh4lic4FXdEaZ0KuQ9cC0jiNEpLdfa6hV/9pbQqgQ4P2ewBOsDlC4iAvvjyEuyL8MX8JmJsZ+n5Di3y2egCuIUd2xOGnuBIpAsdEy68Iv3yc1zUVd/vBQKemmNmtnmDw7iEWo5Yx7AIFMWRg214MCvA=='}, u'apiEndpoint': u'https://api.amazonalexa.com'}}}")
+    
+    sample_event_json = json.loads(json.dumps(sample_event_raw))
+    sample_context = "<__main__.LambdaContext object at 0x000000000000>"
+    handler(sample_event_json, sample_context)'''
+    
+    
+    
+    
+    
+    
+    
 
-    
-    
-    
