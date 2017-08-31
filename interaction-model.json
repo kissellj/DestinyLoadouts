@@ -1,0 +1,6868 @@
+{
+  "intents": [
+    {
+      "name": "AMAZON.CancelIntent",
+      "samples": [
+        "to cancel",
+        "cancel"
+      ]
+    },
+    {
+      "name": "AMAZON.HelpIntent",
+      "samples": [
+        "help",
+        "for help",
+        "to help"
+      ]
+    },
+    {
+      "name": "AMAZON.StopIntent",
+      "samples": [
+        "stop",
+        "to stop"
+      ]
+    },
+    {
+      "name": "EquipEmblem",
+      "samples": [
+        "{INTENT_EQUIP} {INVENTORY_EMBLEM} emblem"
+      ],
+      "slots": [
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        },
+        {
+          "name": "INVENTORY_EMBLEM",
+          "type": "INVENTORY_EMBLEM",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipEmote",
+      "samples": [
+        "{INTENT_EQUIP} {INVENTORY_EMOTE} {TYPE_GESTURE}"
+      ],
+      "slots": [
+        {
+          "name": "INVENTORY_EMOTE",
+          "type": "INVENTORY_EMOTE",
+          "samples": []
+        },
+        {
+          "name": "TYPE_GESTURE",
+          "type": "TYPE_GESTURE",
+          "samples": []
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipExoticArmor",
+      "samples": [
+        "{INTENT_EQUIP} {EXOTIC_ARMOR} exotic armor"
+      ],
+      "slots": [
+        {
+          "name": "EXOTIC_ARMOR",
+          "type": "ARMOR_EXOTIC",
+          "samples": []
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipExoticWeapon",
+      "samples": [
+        "{INTENT_EQUIP} {WEAPON_EXOTIC} exotic weapon"
+      ],
+      "slots": [
+        {
+          "name": "WEAPON_EXOTIC",
+          "type": "WEAPON_EXOTIC",
+          "samples": []
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipLoadout",
+      "samples": [
+        "{INTENT_EQUIP} {LOADOUT}",
+        "{INTENT_EQUIP} {LOADOUT} {FILTER}"
+      ],
+      "slots": [
+        {
+          "name": "LOADOUT",
+          "type": "LOADOUT",
+          "samples": [
+            "{LOADOUT}",
+            "This is for {LOADOUT}",
+            "This load-out is for {LOADOUT}",
+            "{INTENT_EQUIP} {LOADOUT}",
+            "{INTENT_EQUIP} {LOADOUT} {FILTER}",
+            "Equip my load-out for {LOADOUT}"
+          ]
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        },
+        {
+          "name": "FILTER",
+          "type": "FILTER",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipShader",
+      "samples": [
+        "{INTENT_EQUIP} {INVENTORY_SHADER} shader"
+      ],
+      "slots": [
+        {
+          "name": "INVENTORY_SHADER",
+          "type": "INVENTORY_SHADER",
+          "samples": []
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipShip",
+      "samples": [
+        "{INTENT_EQUIP} {INVENTORY_SHIP} ship"
+      ],
+      "slots": [
+        {
+          "name": "INVENTORY_SHIP",
+          "type": "INVENTORY_SHIP",
+          "samples": []
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipSparrow",
+      "samples": [
+        "{INTENT_EQUIP} {INVENTORY_SPARROW} sparrow",
+        "{INTENT_EQUIP} {INVENTORY_SPARROW} vehicle"
+      ],
+      "slots": [
+        {
+          "name": "INVENTORY_SPARROW",
+          "type": "INVENTORY_SPARROW",
+          "samples": []
+        },
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "EquipSubclass",
+      "samples": [
+        "{INTENT_EQUIP} {CHARACTER_SUBCLASS} sub class",
+        "{INTENT_EQUIP} {CHARACTER_SUBCLASS} sub-class",
+        "{INTENT_EQUIP} {CHARACTER_SUBCLASS} subclass"
+      ],
+      "slots": [
+        {
+          "name": "INTENT_EQUIP",
+          "type": "INTENT_EQUIP",
+          "samples": []
+        },
+        {
+          "name": "CHARACTER_SUBCLASS",
+          "type": "CHARACTER_SUBCLASS",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "SaveLoadout",
+      "samples": [
+        "{INTENT_SAVE} {LOADOUT}",
+        "{INTENT_SAVE} {LOADOUT} {FILTER}"
+      ],
+      "slots": [
+        {
+          "name": "LOADOUT",
+          "type": "LOADOUT",
+          "samples": [
+            "Save my load-out for {LOADOUT}",
+            "{INTENT_SAVE} {LOADOUT} {FILTER}",
+            "{INTENT_SAVE} {LOADOUT}",
+            "This load-out is for {LOADOUT}",
+            "This is for {LOADOUT}",
+            "{LOADOUT}"
+          ]
+        },
+        {
+          "name": "FILTER",
+          "type": "FILTER",
+          "samples": []
+        },
+        {
+          "name": "INTENT_SAVE",
+          "type": "INTENT_SAVE",
+          "samples": []
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "ARMOR_EXOTIC",
+      "values": [
+        {
+          "id": "acd0_feedback_fence",
+          "name": {
+            "value": "acd/0 feedback fence",
+            "synonyms": [
+              "feed back fence",
+              "feedback fence",
+              "a. c. d. o.",
+              "a. c. d. o. feed back fence",
+              "a. c. d. o. feed back"
+            ]
+          }
+        },
+        {
+          "id": "achlyophage_symbiote",
+          "name": {
+            "value": "achlyophage symbiote",
+            "synonyms": [
+              "acolyte symbiote"
+            ]
+          }
+        },
+        {
+          "id": "alchemists_raiment",
+          "name": {
+            "value": "alchemist's raiment",
+            "synonyms": [
+              "alchemists raiment"
+            ]
+          }
+        },
+        {
+          "id": "an_insurmountable_skullfort",
+          "name": {
+            "value": "an insurmountable skullfort",
+            "synonyms": [
+              "an insurmountable skull fort",
+              "insurmountable skullfort",
+              "insurmountable skull fort"
+            ]
+          }
+        },
+        {
+          "id": "apotheosis_veil",
+          "name": {
+            "value": "apotheosis veil",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "astrocyte_verse",
+          "name": {
+            "value": "astrocyte verse",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ats8_arachnid",
+          "name": {
+            "value": "ats/8 arachnid",
+            "synonyms": [
+              "arachnid",
+              "a. t. s. eight arachnid"
+            ]
+          }
+        },
+        {
+          "id": "ats8_tarantella",
+          "name": {
+            "value": "ats/8 tarantella",
+            "synonyms": [
+              "a. t. s. eight tarantella",
+              "tarantella",
+              "a. t. s. eight tarantula",
+              "tarantula"
+            ]
+          }
+        },
+        {
+          "id": "celestial_nighthawk",
+          "name": {
+            "value": "celestial nighthawk",
+            "synonyms": [
+              "celestial night hawk",
+              "night hawk",
+              "nighthawk"
+            ]
+          }
+        },
+        {
+          "id": "chaos_cloak",
+          "name": {
+            "value": "chaos cloak",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "claws_of_ahamkara",
+          "name": {
+            "value": "claws of ahamkara",
+            "synonyms": [
+              "claws of akam kara"
+            ]
+          }
+        },
+        {
+          "id": "cloak_of_oblivion",
+          "name": {
+            "value": "cloak of oblivion",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cloak_of_the_rising",
+          "name": {
+            "value": "cloak of the rising",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "crest_of_alpha_lupi",
+          "name": {
+            "value": "crest of alpha lupi",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "dont_touch_me",
+          "name": {
+            "value": "don't touch me",
+            "synonyms": [
+              "do not touch me"
+            ]
+          }
+        },
+        {
+          "id": "empyrean_bellicose",
+          "name": {
+            "value": "empyrean bellicose",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "eternal_warrior",
+          "name": {
+            "value": "eternal warrior",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "graviton_forfeit",
+          "name": {
+            "value": "graviton forfeit",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "heart_of_the_praxic_fire",
+          "name": {
+            "value": "heart of the praxic fire",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "helm_of_inmost_light",
+          "name": {
+            "value": "helm of inmost light",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "helm_of_saint_14",
+          "name": {
+            "value": "helm of saint-14",
+            "synonyms": [
+              "helm of saint fourteen",
+              "saint fourteen"
+            ]
+          }
+        },
+        {
+          "id": "circle_of_war",
+          "name": {
+            "value": "circle of war",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "light_beyond",
+          "name": {
+            "value": "light beyond",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_age_to_come",
+          "name": {
+            "value": "the age to come",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "bones_of_eao",
+          "name": {
+            "value": "bones of eao",
+            "synonyms": [
+              "bones of a. o."
+            ]
+          }
+        },
+        {
+          "id": "dunemarchers",
+          "name": {
+            "value": "dunemarchers",
+            "synonyms": [
+              "dune marchers",
+              "dunemarcher's",
+              "dune marcher's"
+            ]
+          }
+        },
+        {
+          "id": "fr0st_ee5",
+          "name": {
+            "value": "fr0st-ee5",
+            "synonyms": [
+              "frost e.",
+              "frost e's",
+              "frost e. e. five",
+              "frost e. five",
+              "frosty five",
+              "frosty",
+              "frosties"
+            ]
+          }
+        },
+        {
+          "id": "immolation_fists",
+          "name": {
+            "value": "immolation fists",
+            "synonyms": [
+              "immolation fist's"
+            ]
+          }
+        },
+        {
+          "id": "khepris_sting",
+          "name": {
+            "value": "khepri's sting",
+            "synonyms": [
+              "khepris sting"
+            ]
+          }
+        },
+        {
+          "id": "knucklehead_radar",
+          "name": {
+            "value": "knucklehead radar",
+            "synonyms": [
+              "knuckle head radar"
+            ]
+          }
+        },
+        {
+          "id": "light_beyond_nemesis",
+          "name": {
+            "value": "light beyond nemesis",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lucky_raspberry",
+          "name": {
+            "value": "lucky raspberry",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mark_of_oblivion",
+          "name": {
+            "value": "mark of oblivion",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mark_of_the_circle",
+          "name": {
+            "value": "mark of the circle",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mark_of_the_executor",
+          "name": {
+            "value": "mark of the executor",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mask_of_the_third_man",
+          "name": {
+            "value": "mask of the third man",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mk44_stand_asides",
+          "name": {
+            "value": "m. k. 44 stand asides",
+            "synonyms": [
+              "m. k. fourty four stand asides",
+              "stand aside",
+              "stand asides",
+              "m. k. fourty four"
+            ]
+          }
+        },
+        {
+          "id": "no_backup_plans",
+          "name": {
+            "value": "no backup plans",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "nothing_manacles",
+          "name": {
+            "value": "nothing manacles",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "obsidian_mind",
+          "name": {
+            "value": "obsidian mind",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ophidian_aspect",
+          "name": {
+            "value": "ophidian aspect",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "peregrine_greaves",
+          "name": {
+            "value": "peregrine greaves",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "purifier_robes",
+          "name": {
+            "value": "purifier robes",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "radiant_dance_machines",
+          "name": {
+            "value": "radiant dance machines",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ruin_wings",
+          "name": {
+            "value": "ruin wings",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sealed_ahamkara_grasps",
+          "name": {
+            "value": "sealed ahamkara grasps",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "shinobus_vow",
+          "name": {
+            "value": "shinobu's vow",
+            "synonyms": [
+              "shinobus vow"
+            ]
+          }
+        },
+        {
+          "id": "skull_of_dire_ahamkara",
+          "name": {
+            "value": "skull of dire ahamkara",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "skyburners_annex",
+          "name": {
+            "value": "skyburners annex",
+            "synonyms": [
+              "skyburner's annex",
+              "sky burners annex",
+              "sky burner's annex",
+              "skyburners",
+              "sky burners",
+              "skyburner's",
+              "sky burner's"
+            ]
+          }
+        },
+        {
+          "id": "sunbreakers",
+          "name": {
+            "value": "sunbreakers",
+            "synonyms": [
+              "sun breakers",
+              "sunbreaker's",
+              "sun breaker's"
+            ]
+          }
+        },
+        {
+          "id": "starfire_protocol",
+          "name": {
+            "value": "starfire protocol",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "thagomizers",
+          "name": {
+            "value": "thagomizers",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_armamentarium",
+          "name": {
+            "value": "the armamentarium",
+            "synonyms": [
+              "armamentarium"
+            ]
+          }
+        },
+        {
+          "id": "the_glasshouse",
+          "name": {
+            "value": "the glasshouse",
+            "synonyms": [
+              "glasshouse",
+              "glass house",
+              "the glass house"
+            ]
+          }
+        },
+        {
+          "id": "the_impossible_machines",
+          "name": {
+            "value": "the impossible machines",
+            "synonyms": [
+              "impossible machines"
+            ]
+          }
+        },
+        {
+          "id": "the_ram",
+          "name": {
+            "value": "the ram",
+            "synonyms": [
+              "ram"
+            ]
+          }
+        },
+        {
+          "id": "the_stag",
+          "name": {
+            "value": "the stag",
+            "synonyms": [
+              "stag"
+            ]
+          }
+        },
+        {
+          "id": "the_taikonaut",
+          "name": {
+            "value": "the taikonaut",
+            "synonyms": [
+              "taikonaut"
+            ]
+          }
+        },
+        {
+          "id": "transversive_steps",
+          "name": {
+            "value": "transversive steps",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "twilight_garrison",
+          "name": {
+            "value": "twilight garrison",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "voidfang_vestments",
+          "name": {
+            "value": "voidfang vestments",
+            "synonyms": [
+              "void fang",
+              "void fang vestments"
+            ]
+          }
+        },
+        {
+          "id": "young_ahamkaras_spine",
+          "name": {
+            "value": "young ahamkara's spine",
+            "synonyms": [
+              "young ahamkaras spine"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CHARACTER_SUBCLASS",
+      "values": [
+        {
+          "id": "sentinel",
+          "name": {
+            "value": "sentinel",
+            "synonyms": [
+              "captain america",
+              "shield",
+              "captain"
+            ]
+          }
+        },
+        {
+          "id": "striker",
+          "name": {
+            "value": "striker",
+            "synonyms": [
+              "fist of panic",
+              "fist of havok",
+              "shoulder charge",
+              "smash",
+              "hulk smash",
+              "slam"
+            ]
+          }
+        },
+        {
+          "id": "sunbreaker",
+          "name": {
+            "value": "sunbreaker",
+            "synonyms": [
+              "sun breaker",
+              "hammer",
+              "hammer titan",
+              "hammers"
+            ]
+          }
+        },
+        {
+          "id": "defender",
+          "name": {
+            "value": "defender",
+            "synonyms": [
+              "bubble titan",
+              "bubble",
+              "ward of dawn",
+              "weapons of light",
+              "blessing of light"
+            ]
+          }
+        },
+        {
+          "id": "dawnblade",
+          "name": {
+            "value": "dawnblade",
+            "synonyms": [
+              "dawn blade",
+              "dawn hammer"
+            ]
+          }
+        },
+        {
+          "id": "voidwalker",
+          "name": {
+            "value": "voidwalker",
+            "synonyms": [
+              "voidlock",
+              "void walker",
+              "void lock",
+              "nova",
+              "nova bomb"
+            ]
+          }
+        },
+        {
+          "id": "stormcaller",
+          "name": {
+            "value": "stormcaller",
+            "synonyms": [
+              "storm caller",
+              "palpatine",
+              "emperor palpatine"
+            ]
+          }
+        },
+        {
+          "id": "arcstrider",
+          "name": {
+            "value": "arcstrider",
+            "synonyms": [
+              "pole dancer",
+              "ark staff",
+              "arc staff",
+              "arkstrider",
+              "ark strider",
+              "arc strider",
+              "pole",
+              "staff"
+            ]
+          }
+        },
+        {
+          "id": "gunslinger",
+          "name": {
+            "value": "gunslinger",
+            "synonyms": [
+              "gun slinger",
+              "mcclintok",
+              "mccree",
+              "goldie",
+              "golden gun"
+            ]
+          }
+        },
+        {
+          "id": "nightstalker",
+          "name": {
+            "value": "nightstalker",
+            "synonyms": [
+              "tether",
+              "my tether",
+              "wombo combo"
+            ]
+          }
+        },
+        {
+          "id": "sunsinger",
+          "name": {
+            "value": "sunsinger",
+            "synonyms": [
+              "res",
+              "res lock",
+              "sun singer",
+              "rez",
+              "rez lock",
+              "self res",
+              "self rez"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "FILTER",
+      "values": [
+        {
+          "id": "armor",
+          "name": {
+            "value": "armor",
+            "synonyms": [
+              "only armor",
+              "armor only"
+            ]
+          }
+        },
+        {
+          "id": "weapons",
+          "name": {
+            "value": "weapons",
+            "synonyms": [
+              "weapons only",
+              "only weapons"
+            ]
+          }
+        },
+        {
+          "id": "gear",
+          "name": {
+            "value": "gear",
+            "synonyms": [
+              "gear"
+            ]
+          }
+        },
+        {
+          "id": "loadout",
+          "name": {
+            "value": "loadout",
+            "synonyms": [
+              "load out"
+            ]
+          }
+        },
+        {
+          "id": "loadout_with_cosmetics",
+          "name": {
+            "value": "loadout_with_cosmetics",
+            "synonyms": [
+              "loadout with cosmetics",
+              "gear with cosmetics"
+            ]
+          }
+        },
+        {
+          "id": "emblem",
+          "name": {
+            "value": "emblem",
+            "synonyms": [
+              "emblem"
+            ]
+          }
+        },
+        {
+          "id": "emote",
+          "name": {
+            "value": "emote",
+            "synonyms": [
+              "emote",
+              "E. mote"
+            ]
+          }
+        },
+        {
+          "id": "shader",
+          "name": {
+            "value": "shader",
+            "synonyms": [
+              "shader"
+            ]
+          }
+        },
+        {
+          "id": "ship",
+          "name": {
+            "value": "ship",
+            "synonyms": [
+              "ship"
+            ]
+          }
+        },
+        {
+          "id": "sparrow",
+          "name": {
+            "value": "sparrow",
+            "synonyms": [
+              "sparrow",
+              "vehicle"
+            ]
+          }
+        },
+        {
+          "id": "subclass",
+          "name": {
+            "value": "subclass",
+            "synonyms": [
+              "subclass",
+              "sub-class",
+              "sub class"
+            ]
+          }
+        },
+        {
+          "id": "ghost",
+          "name": {
+            "value": "ghost",
+            "synonyms": [
+              "ghost"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INTENT_EQUIP",
+      "values": [
+        {
+          "id": "equip",
+          "name": {
+            "value": "equip",
+            "synonyms": [
+              "to equip",
+              "install",
+              "to install",
+              "load",
+              "to load",
+              "to load the",
+              "load the",
+              "to install the",
+              "install the",
+              "to equip the",
+              "equip the",
+              "equip my",
+              "to equip my",
+              "install my",
+              "to install my",
+              "load my",
+              "to load my",
+              "to equip my gear for",
+              "to equip gear for",
+              "to equip the gear for",
+              "to install my gear for",
+              "to install gear for",
+              "to install gear for",
+              "to load my gear for",
+              "to load gear for",
+              "to load the gear for",
+              "to quit the",
+              "quit the",
+              "to quit",
+              "to cook",
+              "to cook the",
+              "cook the",
+              "to a my",
+              "to put",
+              "to put the",
+              "put the",
+              "with my load up for",
+              "with my load up",
+              "with my load out",
+              "with my load out for"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INTENT_SAVE",
+      "values": [
+        {
+          "id": "save",
+          "name": {
+            "value": "save",
+            "synonyms": [
+              "to save",
+              "store",
+              "to store",
+              "to store my",
+              "to save my",
+              "to save my gear for",
+              "to save gear for",
+              "to save the gear for",
+              "to store my gear for",
+              "to store gear for",
+              "to store the gear for",
+              "say if my load for",
+              "say if my load",
+              "say if my load up",
+              "to save my load up for",
+              "save my load up for",
+              "to save my load up",
+              "save my load up",
+              "to save my loadout for",
+              "to save my load-out for"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INVENTORY_EMBLEM",
+      "values": [
+        {
+          "id": "ab_principio",
+          "name": {
+            "value": "ab principio",
+            "synonyms": [
+              "a. b. principio"
+            ]
+          }
+        },
+        {
+          "id": "abraxas",
+          "name": {
+            "value": "abraxas",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "abraxas_ii",
+          "name": {
+            "value": "abraxas ii",
+            "synonyms": [
+              "abraxas eye eye",
+              "abraxas two",
+              "abraxas i. i."
+            ]
+          }
+        },
+        {
+          "id": "alchemist_cast",
+          "name": {
+            "value": "alchemist cast",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "all_in_all",
+          "name": {
+            "value": "all in all",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "arach_and_ruin",
+          "name": {
+            "value": "arach and ruin",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "archivists_seal",
+          "name": {
+            "value": "archivist's seal",
+            "synonyms": [
+              "archivists seal"
+            ]
+          }
+        },
+        {
+          "id": "badge_of_the_monarchy",
+          "name": {
+            "value": "badge of the monarchy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_monarchy_ii",
+          "name": {
+            "value": "badge of the monarchy ii",
+            "synonyms": [
+              "badge of the monarchy eye eye",
+              "badge of the monarchy two",
+              "badge of the monarchy i. i."
+            ]
+          }
+        },
+        {
+          "id": "badge_of_the_patron",
+          "name": {
+            "value": "badge of the patron",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_patron_ii",
+          "name": {
+            "value": "badge of the patron ii",
+            "synonyms": [
+              "badge of the patron eye eye",
+              "badge of the patron two",
+              "badge of the patron i. i."
+            ]
+          }
+        },
+        {
+          "id": "be_brave",
+          "name": {
+            "value": "be brave",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "blessing_of_iv",
+          "name": {
+            "value": "blessing of iv",
+            "synonyms": [
+              "blessing of i. v.",
+              "blessing of ivy",
+              "blessing of four"
+            ]
+          }
+        },
+        {
+          "id": "badge_of_momentum",
+          "name": {
+            "value": "blessing of momentum",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_ancients",
+          "name": {
+            "value": "blessing of the ancients",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_gifted",
+          "name": {
+            "value": "blessing of the gifted",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_joined",
+          "name": {
+            "value": "blessing of the joined",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_knight",
+          "name": {
+            "value": "blessing of the knight",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_sentinel",
+          "name": {
+            "value": "blessing of the sentinel",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_skeptic",
+          "name": {
+            "value": "blessing of the skeptic",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_speaker",
+          "name": {
+            "value": "blessing of the speaker",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_unmade",
+          "name": {
+            "value": "blessing of the unmade",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_watcher",
+          "name": {
+            "value": "blessing of the watcher",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_the_zealot",
+          "name": {
+            "value": "blessing of the zealot",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "badge_of_worlds",
+          "name": {
+            "value": "blessing of worlds",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "blood_of_the_monarchy",
+          "name": {
+            "value": "blood of the monarchy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "bomb_squad",
+          "name": {
+            "value": "bomb squad",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "bomb_squad_ii",
+          "name": {
+            "value": "bomb squad ii",
+            "synonyms": [
+              "bomb squad eye eye",
+              "bomb squad two",
+              "bomb squad i. i."
+            ]
+          }
+        },
+        {
+          "id": "born_of_fire",
+          "name": {
+            "value": "born of fire",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "by_fire",
+          "name": {
+            "value": "by fire",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cassoid",
+          "name": {
+            "value": "cassoid",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "citywatch",
+          "name": {
+            "value": "citywatch",
+            "synonyms": [
+              "city watch"
+            ]
+          }
+        },
+        {
+          "id": "clades_orygis",
+          "name": {
+            "value": "clades orygis",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "collapse_of_space",
+          "name": {
+            "value": "collapse of space",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "comets_heart",
+          "name": {
+            "value": "comet's heart",
+            "synonyms": [
+              "comets heart"
+            ]
+          }
+        },
+        {
+          "id": "command",
+          "name": {
+            "value": "command",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "command_ii",
+          "name": {
+            "value": "command ii",
+            "synonyms": [
+              "command eye eye",
+              "command two",
+              "command i. i."
+            ]
+          }
+        },
+        {
+          "id": "corsairs_badge",
+          "name": {
+            "value": "corsair's badge",
+            "synonyms": [
+              "corsairs badge"
+            ]
+          }
+        },
+        {
+          "id": "crest_of_the_gravesinger",
+          "name": {
+            "value": "crest of the gravesinger",
+            "synonyms": [
+              "crest of the grave singer"
+            ]
+          }
+        },
+        {
+          "id": "crest_of_velocity",
+          "name": {
+            "value": "crest of velocity",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "crimson_crest",
+          "name": {
+            "value": "crimson crest",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "crotas_end_emblem",
+          "name": {
+            "value": "crota's end emblem",
+            "synonyms": [
+              "crota's end",
+              "crotas end emblem",
+              "crotas end",
+              "krota's end",
+              "krotas end"
+            ]
+          }
+        },
+        {
+          "id": "crown_of_the_new_monarchy",
+          "name": {
+            "value": "crown of the new monarchy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "crown_of_the_sovereign",
+          "name": {
+            "value": "crown of the sovereign",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "crucible_signet",
+          "name": {
+            "value": "crucible signet",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "crux_lomar",
+          "name": {
+            "value": "crux lomar",
+            "synonyms": [
+              "crux low mar"
+            ]
+          }
+        },
+        {
+          "id": "crypto_shift",
+          "name": {
+            "value": "crypto shift",
+            "synonyms": [
+              "crypto-shift"
+            ]
+          }
+        },
+        {
+          "id": "crypto_shift_ii",
+          "name": {
+            "value": "crypto shift ii",
+            "synonyms": [
+              "crypto_shift eye eye",
+              "crypto_shift i. i.",
+              "crypto_shift two"
+            ]
+          }
+        },
+        {
+          "id": "cult_arcanum",
+          "name": {
+            "value": "cult arcanum",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cyclops_mind",
+          "name": {
+            "value": "cyclops mind",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cyclops_mind_ii",
+          "name": {
+            "value": "cyclops mind ii",
+            "synonyms": [
+              "cyclops mind i. i.",
+              "cyclops mind eye eye",
+              "cyclops mind two"
+            ]
+          }
+        },
+        {
+          "id": "daito",
+          "name": {
+            "value": "daito",
+            "synonyms": [
+              "date o."
+            ]
+          }
+        },
+        {
+          "id": "dead_zone_memento",
+          "name": {
+            "value": "dead zone memento",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "devourer_of_light",
+          "name": {
+            "value": "devourer of light",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "dragoon",
+          "name": {
+            "value": "dragoon",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "echo_of_shattered_suns",
+          "name": {
+            "value": "echo of shattered suns",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "elegance_of_ages",
+          "name": {
+            "value": "elegance of ages",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "element_of_the_dead_sun",
+          "name": {
+            "value": "element of the dead sun",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "element_of_the_shifter",
+          "name": {
+            "value": "element of the shifter",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "emerald_rook",
+          "name": {
+            "value": "emerald rook",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "emperor_sigil",
+          "name": {
+            "value": "emperor sigil",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "eris_morn",
+          "name": {
+            "value": "eris morn",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "executors_red_mark",
+          "name": {
+            "value": "executor's red mark",
+            "synonyms": [
+              "executors red mark"
+            ]
+          }
+        },
+        {
+          "id": "eye_of_osiris",
+          "name": {
+            "value": "eye of osiris",
+            "synonyms": [
+              "i. of osiris"
+            ]
+          }
+        },
+        {
+          "id": "eye_of_the_storm",
+          "name": {
+            "value": "eye of the storm",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "firm_decree",
+          "name": {
+            "value": "firm decree",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "flow_of_knowledge",
+          "name": {
+            "value": "flow of knowledge",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "gen_golgotha",
+          "name": {
+            "value": "gen golgotha",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "gen_golgotha_ii",
+          "name": {
+            "value": "gen golgotha ii",
+            "synonyms": [
+              "gen golgotha i. i.",
+              "gen golgotha eye eye",
+              "gen golgotha two"
+            ]
+          }
+        },
+        {
+          "id": "glass_and_time",
+          "name": {
+            "value": "glass and time",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "having_it_all",
+          "name": {
+            "value": "having it all",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "hear_the_call",
+          "name": {
+            "value": "hear the call",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "honeybee_iv",
+          "name": {
+            "value": "honeybee iv",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "honor_of_blades",
+          "name": {
+            "value": "honor of blades",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "house_of_judgement",
+          "name": {
+            "value": "house of judgement",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "hakke",
+          "name": {
+            "value": "hakke",
+            "synonyms": [
+              "haw keh"
+            ]
+          }
+        },
+        {
+          "id": "infinitesimal",
+          "name": {
+            "value": "infinitesimal",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "insignia_of_triumphs",
+          "name": {
+            "value": "insignia of triumphs",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "iron_pride",
+          "name": {
+            "value": "iron pride",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ironwood_alight",
+          "name": {
+            "value": "ironwood alight",
+            "synonyms": [
+              "iron wood alight"
+            ]
+          }
+        },
+        {
+          "id": "jade_rabbit_insignia",
+          "name": {
+            "value": "jade rabbit insignia",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "judgements_right_hand",
+          "name": {
+            "value": "judgement's right hand",
+            "synonyms": [
+              "judgements right hand"
+            ]
+          }
+        },
+        {
+          "id": "kellbreaker",
+          "name": {
+            "value": "kellbreaker",
+            "synonyms": [
+              "kell breaker"
+            ]
+          }
+        },
+        {
+          "id": "kingsbane",
+          "name": {
+            "value": "kingsbane",
+            "synonyms": [
+              "kings bane",
+              "king's bane"
+            ]
+          }
+        },
+        {
+          "id": "laurea_prima",
+          "name": {
+            "value": "laurea prima",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "little_light_emblem",
+          "name": {
+            "value": "little light emblem",
+            "synonyms": [
+              "little light",
+              "little lite"
+            ]
+          }
+        },
+        {
+          "id": "logical_conclusion",
+          "name": {
+            "value": "logical conclusion",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lupi_reginae",
+          "name": {
+            "value": "lupi reginae",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mammoth",
+          "name": {
+            "value": "mammoth",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mammoth_ii",
+          "name": {
+            "value": "mammoth ii",
+            "synonyms": [
+              "mammoth i. i.",
+              "mammoth eye eye",
+              "mammoth two"
+            ]
+          }
+        },
+        {
+          "id": "martius_momentum",
+          "name": {
+            "value": "martius momentum",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "memoria_ferri",
+          "name": {
+            "value": "memoria ferri",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mercy_of_motion",
+          "name": {
+            "value": "mercy of motion",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "midnight_hunt",
+          "name": {
+            "value": "midnight hunt",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "might_of_vulcan",
+          "name": {
+            "value": "might of vulcan",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "moon_of_osiris",
+          "name": {
+            "value": "moon of osiris",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "nadir",
+          "name": {
+            "value": "nadir",
+            "synonyms": [
+              "nah deer",
+              "nah dear"
+            ]
+          }
+        },
+        {
+          "id": "no_puppet_i",
+          "name": {
+            "value": "no puppet, i",
+            "synonyms": [
+              "no puppet",
+              "no puppet i.",
+              "no puppet eye",
+              "no puppet one"
+            ]
+          }
+        },
+        {
+          "id": "of_light_and_hunger",
+          "name": {
+            "value": "of light and hunger",
+            "synonyms": [
+              "light and hunger"
+            ]
+          }
+        },
+        {
+          "id": "omen_of_chaos",
+          "name": {
+            "value": "omen of chaos",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "omen_of_chaos_ii",
+          "name": {
+            "value": "omen of chaos ii",
+            "synonyms": [
+              "omen of chaos i. i.",
+              "omen of chaos eye eye",
+              "omen of chaos two"
+            ]
+          }
+        },
+        {
+          "id": "omen_of_the_dead",
+          "name": {
+            "value": "omen of the dead",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "omen_of_the_dead_ii",
+          "name": {
+            "value": "omen of the dead ii",
+            "synonyms": [
+              "omen of the dead i. i.",
+              "omen of the dead eye eye",
+              "omen of the dead two"
+            ]
+          }
+        },
+        {
+          "id": "omen_of_the_decayer",
+          "name": {
+            "value": "omen of the decayer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "omen_of_the_exodus",
+          "name": {
+            "value": "omen of the exodus",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "omolon",
+          "name": {
+            "value": "omolon",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "on_the_edge",
+          "name": {
+            "value": "on the edge",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "our_kingdom",
+          "name": {
+            "value": "our kingdom",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "paean_of_resplendence",
+          "name": {
+            "value": "paean of resplendence",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "paladins_blazon",
+          "name": {
+            "value": "paladin's blazon",
+            "synonyms": [
+              "paladins blazon"
+            ]
+          }
+        },
+        {
+          "id": "prince_sigil",
+          "name": {
+            "value": "prince sigil",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "prison_of_elders_i",
+          "name": {
+            "value": "prison of elders i",
+            "synonyms": [
+              "prison of elders",
+              "prison of elders i.",
+              "prison of elders eye",
+              "prison of elders one"
+            ]
+          }
+        },
+        {
+          "id": "prison_of_elders_ii",
+          "name": {
+            "value": "prison of elders ii",
+            "synonyms": [
+              "prison of elders i. i.",
+              "prison of elders eye eye",
+              "prison of elders two"
+            ]
+          }
+        },
+        {
+          "id": "queens_guard_crest",
+          "name": {
+            "value": "queen's guard crest",
+            "synonyms": [
+              "queens guard crest"
+            ]
+          }
+        },
+        {
+          "id": "revolver",
+          "name": {
+            "value": "revolver",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ring_of_triumphs",
+          "name": {
+            "value": "ring of triumphs",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "rune_of_the_machine",
+          "name": {
+            "value": "rune of the machine",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "scar_of_radegast",
+          "name": {
+            "value": "scar of radegast",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "scarab_heart",
+          "name": {
+            "value": "scarab heart",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sheltered_truth",
+          "name": {
+            "value": "sheltered truth",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sheltered_truth_ii",
+          "name": {
+            "value": "sheltered truth ii",
+            "synonyms": [
+              "sheltered truth i. i.",
+              "sheltered truth eye eye",
+              "sheltered truth two"
+            ]
+          }
+        },
+        {
+          "id": "shield_of_the_traveler",
+          "name": {
+            "value": "shield of the traveler",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_deviance",
+          "name": {
+            "value": "sigil of deviance",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_seven",
+          "name": {
+            "value": "sigil of seven",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_the_burning_dawn",
+          "name": {
+            "value": "sigil of the burning dawn",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_the_coming_war",
+          "name": {
+            "value": "sigil of the coming war",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_the_eternal_night",
+          "name": {
+            "value": "sigil of the eternal night",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_the_iron_lords",
+          "name": {
+            "value": "sigil of the iron lords",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_the_war_cult",
+          "name": {
+            "value": "sigil of the war cult",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sigil_of_the_war_cult_ii",
+          "name": {
+            "value": "sigil of the war cult ii",
+            "synonyms": [
+              "sigil of the war cult i. i.",
+              "sigil of the war cult eye eye",
+              "sigil of the war cult two"
+            ]
+          }
+        },
+        {
+          "id": "sigil_of_the_infinite",
+          "name": {
+            "value": "sigil of the infinite",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "silence_after_song",
+          "name": {
+            "value": "silence after song",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "solar_labor",
+          "name": {
+            "value": "solar labor",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "soul_extracted",
+          "name": {
+            "value": "soul extracted",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "spectrum_theory",
+          "name": {
+            "value": "spectrum theory",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "strength_of_ages",
+          "name": {
+            "value": "strength of ages",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sun_of_osiris",
+          "name": {
+            "value": "sun of osiris",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "suros",
+          "name": {
+            "value": "suros",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "swords_of_dawn",
+          "name": {
+            "value": "swords of dawn",
+            "synonyms": [
+              "sword's of dawn"
+            ]
+          }
+        },
+        {
+          "id": "symbol_of_the_wolf",
+          "name": {
+            "value": "symbol of the wolf",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "tenebrae_lunae",
+          "name": {
+            "value": "tenebrae lunae",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "tex_mechanica",
+          "name": {
+            "value": "tex mechanica",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_ascendant",
+          "name": {
+            "value": "the ascendant",
+            "synonyms": [
+              "ascendant"
+            ]
+          }
+        },
+        {
+          "id": "the_entertainer",
+          "name": {
+            "value": "the entertainer",
+            "synonyms": [
+              "entertainer"
+            ]
+          }
+        },
+        {
+          "id": "the_inexorable",
+          "name": {
+            "value": "the inexorable",
+            "synonyms": [
+              "inexorable"
+            ]
+          }
+        },
+        {
+          "id": "the_ironwood_tree",
+          "name": {
+            "value": "the ironwood tree",
+            "synonyms": [
+              "ironwood tree",
+              "the iron wood tree",
+              "iron wood tree"
+            ]
+          }
+        },
+        {
+          "id": "the_living_wall",
+          "name": {
+            "value": "the living wall",
+            "synonyms": [
+              "living wall"
+            ]
+          }
+        },
+        {
+          "id": "the_new_wolf_pack",
+          "name": {
+            "value": "the new wolf pack",
+            "synonyms": [
+              "new wolf pack"
+            ]
+          }
+        },
+        {
+          "id": "the_obelisk",
+          "name": {
+            "value": "the obelisk",
+            "synonyms": [
+              "obelisk"
+            ]
+          }
+        },
+        {
+          "id": "the_obelisk_ii",
+          "name": {
+            "value": "the obelisk ii",
+            "synonyms": [
+              "the obelisk i. i.",
+              "the obelisk eye eye",
+              "the obelisk two",
+              "obelisk i. i.",
+              "obelisk eye eye",
+              "obelisk two"
+            ]
+          }
+        },
+        {
+          "id": "the_perfect_shot",
+          "name": {
+            "value": "the perfect shot",
+            "synonyms": [
+              "perfect shot"
+            ]
+          }
+        },
+        {
+          "id": "the_pitiless_bargain",
+          "name": {
+            "value": "the pitiless bargain",
+            "synonyms": [
+              "pitiless bargain"
+            ]
+          }
+        },
+        {
+          "id": "the_rising",
+          "name": {
+            "value": "the rising",
+            "synonyms": [
+              "rising"
+            ]
+          }
+        },
+        {
+          "id": "the_rising_night",
+          "name": {
+            "value": "the rising night",
+            "synonyms": [
+              "rising night"
+            ]
+          }
+        },
+        {
+          "id": "the_siva_solution",
+          "name": {
+            "value": "the siva solution",
+            "synonyms": [
+              "siva solution"
+            ]
+          }
+        },
+        {
+          "id": "the_tale_told",
+          "name": {
+            "value": "the tale told",
+            "synonyms": [
+              "tale told",
+              "tail told",
+              "the tail told"
+            ]
+          }
+        },
+        {
+          "id": "thorium_leaf",
+          "name": {
+            "value": "thorium leaf",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "travelers_eclipse",
+          "name": {
+            "value": "traveler's eclipse",
+            "synonyms": [
+              "travelers eclipse"
+            ]
+          }
+        },
+        {
+          "id": "trust_and_honor",
+          "name": {
+            "value": "trust and honor",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "umbra_veris",
+          "name": {
+            "value": "umbra veris",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "valor_in_darkness",
+          "name": {
+            "value": "valor in darkness",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vanguard_signet",
+          "name": {
+            "value": "vanguard signet",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vanguards_edge",
+          "name": {
+            "value": "vanguard's edge",
+            "synonyms": [
+              "vanguards edge"
+            ]
+          }
+        },
+        {
+          "id": "verisimilitude",
+          "name": {
+            "value": "verisimilitude",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "veterans_scars",
+          "name": {
+            "value": "veteran's scars",
+            "synonyms": [
+              "veterans scars"
+            ]
+          }
+        },
+        {
+          "id": "victory_eagle_ii",
+          "name": {
+            "value": "victory eagle ii",
+            "synonyms": [
+              "victory eagle i. i.",
+              "victory eagle eye eye",
+              "victory eagle two"
+            ]
+          }
+        },
+        {
+          "id": "vigilant_disciple",
+          "name": {
+            "value": "vigilant disciple",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "wayfinder",
+          "name": {
+            "value": "wayfinder",
+            "synonyms": [
+              "way finder"
+            ]
+          }
+        },
+        {
+          "id": "winners_circle",
+          "name": {
+            "value": "winner's circle",
+            "synonyms": [
+              "winners circle"
+            ]
+          }
+        },
+        {
+          "id": "winterborn_mark",
+          "name": {
+            "value": "winterborn mark",
+            "synonyms": [
+              "winter born mark"
+            ]
+          }
+        },
+        {
+          "id": "wisdom_of_ages",
+          "name": {
+            "value": "wisdom of ages",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "wolfsgrin",
+          "name": {
+            "value": "wolfsgrin",
+            "synonyms": [
+              "wolfs grin",
+              "wolf's grin"
+            ]
+          }
+        },
+        {
+          "id": "worm_gods_servant",
+          "name": {
+            "value": "worm gods' servant",
+            "synonyms": [
+              "worm gods servant",
+              "worm god's servant"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INVENTORY_EMOTE",
+      "values": [
+        {
+          "id": "air_guiter",
+          "name": {
+            "value": "air guitar",
+            "synonyms": [
+              "napolean dynamite",
+              "you rock",
+              "rock"
+            ]
+          }
+        },
+        {
+          "id": "awkward_dance",
+          "name": {
+            "value": "awkward dance",
+            "synonyms": [
+              "very funky",
+              "funky"
+            ]
+          }
+        },
+        {
+          "id": "boo",
+          "name": {
+            "value": "boo",
+            "synonyms": [
+              "So scary",
+              "scary",
+              "frightens",
+              "frightening",
+              "scares everyone"
+            ]
+          }
+        },
+        {
+          "id": "bow_down",
+          "name": {
+            "value": "bow down",
+            "synonyms": [
+              "bow"
+            ]
+          }
+        },
+        {
+          "id": "challenge_dance",
+          "name": {
+            "value": "challenge dance",
+            "synonyms": [
+              "beat it"
+            ]
+          }
+        },
+        {
+          "id": "club_dance",
+          "name": {
+            "value": "club dance",
+            "synonyms": [
+              "roxbury brothers",
+              "feel the beat",
+              "feel the dance"
+            ]
+          }
+        },
+        {
+          "id": "do_it",
+          "name": {
+            "value": "do it",
+            "synonyms": [
+              "motivates everyone",
+              "motivational"
+            ]
+          }
+        },
+        {
+          "id": "duo_dance",
+          "name": {
+            "value": "duo dance",
+            "synonyms": [
+              "tale of two guardians",
+              "refer a friend"
+            ]
+          }
+        },
+        {
+          "id": "energetic_dance",
+          "name": {
+            "value": "energetic dance",
+            "synonyms": [
+              "fresh prince",
+              "fresh prince of bel-air",
+              "you've got the moves"
+            ]
+          }
+        },
+        {
+          "id": "enthusiastic_dance",
+          "name": {
+            "value": "enthusiastic dance",
+            "synonyms": [
+              "carlton",
+              "can't stop dancing"
+            ]
+          }
+        },
+        {
+          "id": "facepalm",
+          "name": {
+            "value": "facepalm",
+            "synonyms": [
+              "face palm"
+            ]
+          }
+        },
+        {
+          "id": "finger_wag",
+          "name": {
+            "value": "finger wag",
+            "synonyms": [
+              "not in my house",
+              "no no no"
+            ]
+          }
+        },
+        {
+          "id": "hammer_it_up",
+          "name": {
+            "value": "hammer it up",
+            "synonyms": [
+              "m. c. hammer",
+              "you can't touch this",
+              "hammer"
+            ]
+          }
+        },
+        {
+          "id": "high_five",
+          "name": {
+            "value": "high five",
+            "synonyms": [
+              "oh yeah"
+            ]
+          }
+        },
+        {
+          "id": "howl",
+          "name": {
+            "value": "howl",
+            "synonyms": [
+              "young wolf"
+            ]
+          }
+        },
+        {
+          "id": "instructional_dance",
+          "name": {
+            "value": "instructional dance",
+            "synonyms": [
+              "cali swag district",
+              "teach me how to dougie"
+            ]
+          }
+        },
+        {
+          "id": "jazz_hands",
+          "name": {
+            "value": "jazz hands",
+            "synonyms": [
+              "feeling the magic",
+              "feeling the magic in these digits",
+              "digits",
+              "flashes jazz hands"
+            ]
+          }
+        },
+        {
+          "id": "kicks",
+          "name": {
+            "value": "kicks",
+            "synonyms": [
+              "i think i can dance"
+            ]
+          }
+        },
+        {
+          "id": "monster_dance",
+          "name": {
+            "value": "monster dance",
+            "synonyms": [
+              "the backstreet boys",
+              "everybody",
+              "every body",
+              "back street boys",
+              "back street boys everybody"
+            ]
+          }
+        },
+        {
+          "id": "proposal",
+          "name": {
+            "value": "proposal",
+            "synonyms": [
+              "marry me"
+            ]
+          }
+        },
+        {
+          "id": "secret_gretting",
+          "name": {
+            "value": "secret gretting",
+            "synonyms": [
+              "best friends"
+            ]
+          }
+        },
+        {
+          "id": "slow_clap",
+          "name": {
+            "value": "slow clap",
+            "synonyms": [
+              "just great",
+              "golf clap"
+            ]
+          }
+        },
+        {
+          "id": "strange_dance",
+          "name": {
+            "value": "strange dance",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "suave_dance",
+          "name": {
+            "value": "suave dance",
+            "synonyms": [
+              "the fanciest dance",
+              "fanciest"
+            ]
+          }
+        },
+        {
+          "id": "taken_shiver",
+          "name": {
+            "value": "taken shiver",
+            "synonyms": [
+              "desolate",
+              "taken",
+              "shiver"
+            ]
+          }
+        },
+        {
+          "id": "terrify",
+          "name": {
+            "value": "terrify",
+            "synonyms": [
+              "float",
+              "float and spin",
+              "terrifies",
+              "terrifies everyone"
+            ]
+          }
+        },
+        {
+          "id": "the_circle_glide",
+          "name": {
+            "value": "the circle glide",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_sprinkler",
+          "name": {
+            "value": "the sprinkler",
+            "synonyms": [
+              "nailed it",
+              "sprinkler"
+            ]
+          }
+        },
+        {
+          "id": "thunder",
+          "name": {
+            "value": "thunder",
+            "synonyms": [
+              "greased lightning",
+              "grease"
+            ]
+          }
+        },
+        {
+          "id": "trotting",
+          "name": {
+            "value": "trotting",
+            "synonyms": [
+              "psy",
+              "gangnam style",
+              "gang dam style",
+              "you've got style",
+              "trot",
+              "hey sexy lady",
+              "sexy lady"
+            ]
+          }
+        },
+        {
+          "id": "victory_wave",
+          "name": {
+            "value": "victory wave",
+            "synonyms": [
+              "only for winners",
+              "winners",
+              "s. r. l."
+            ]
+          }
+        },
+        {
+          "id": "wiggly_leg",
+          "name": {
+            "value": "wiggly leg",
+            "synonyms": [
+              "g. s. boyz",
+              "g. s. boyz stanky legg",
+              "stanky leg",
+              "g. s. boyz stanky leg"
+            ]
+          }
+        },
+        {
+          "id": "zombie",
+          "name": {
+            "value": "zombie",
+            "synonyms": [
+              "thriller",
+              "michael jackson's thriller"
+            ]
+          }
+        },
+        {
+          "id": "amazed",
+          "name": {
+            "value": "amazed",
+            "synonyms": [
+              "admire",
+              "admiration"
+            ]
+          }
+        },
+        {
+          "id": "blowing_a_kiss",
+          "name": {
+            "value": "blowing a kiss",
+            "synonyms": [
+              "blow kiss",
+              "kiss",
+              "blows a kiss",
+              "blow a kiss"
+            ]
+          }
+        },
+        {
+          "id": "boo_yah",
+          "name": {
+            "value": "boo yah",
+            "synonyms": [
+              "booyah",
+              "boo yaa",
+              "boo ya"
+            ]
+          }
+        },
+        {
+          "id": "bring_it_on",
+          "name": {
+            "value": "bring it on",
+            "synonyms": [
+              "bring it",
+              "what you got"
+            ]
+          }
+        },
+        {
+          "id": "bye_bye",
+          "name": {
+            "value": "bye bye",
+            "synonyms": [
+              "bye",
+              "see ya",
+              "see you",
+              "see you later"
+            ]
+          }
+        },
+        {
+          "id": "charmed",
+          "name": {
+            "value": "charmed",
+            "synonyms": [
+              "sweet"
+            ]
+          }
+        },
+        {
+          "id": "clap",
+          "name": {
+            "value": "clap",
+            "synonyms": [
+              "well done",
+              "applaud"
+            ]
+          }
+        },
+        {
+          "id": "come_at_me",
+          "name": {
+            "value": "come at me",
+            "synonyms": [
+              "you want a piece of this"
+            ]
+          }
+        },
+        {
+          "id": "congrats",
+          "name": {
+            "value": "congrats",
+            "synonyms": [
+              "good job buddy",
+              "good job"
+            ]
+          }
+        },
+        {
+          "id": "cower",
+          "name": {
+            "value": "cower",
+            "synonyms": [
+              "make it stop",
+              "fear"
+            ]
+          }
+        },
+        {
+          "id": "crane_kick",
+          "name": {
+            "value": "crane kick",
+            "synonyms": [
+              "karate",
+              "karate kid"
+            ]
+          }
+        },
+        {
+          "id": "evil_scheme",
+          "name": {
+            "value": "evil scheme",
+            "synonyms": [
+              "sinister"
+            ]
+          }
+        },
+        {
+          "id": "flip_coin",
+          "name": {
+            "value": "flip coin",
+            "synonyms": [
+              "two face",
+              "too face",
+              "coin flip",
+              "flip a coin"
+            ]
+          }
+        },
+        {
+          "id": "forehead_slap",
+          "name": {
+            "value": "forehead slap",
+            "synonyms": [
+              "frustration",
+              "frustrated"
+            ]
+          }
+        },
+        {
+          "id": "formal_bow",
+          "name": {
+            "value": "formal bow",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "graceful_sneeze",
+          "name": {
+            "value": "graceful sneeze",
+            "synonyms": [
+              "exaggerated sneeze",
+              "sneeze",
+              "dab",
+              "the dab",
+              "dabbing"
+            ]
+          }
+        },
+        {
+          "id": "i_dont_know",
+          "name": {
+            "value": "i don't know",
+            "synonyms": [
+              "confused",
+              "confused gesture",
+              "no idea"
+            ]
+          }
+        },
+        {
+          "id": "jump_shot",
+          "name": {
+            "value": "jump shot",
+            "synonyms": [
+              "basketball",
+              "nothing but net"
+            ]
+          }
+        },
+        {
+          "id": "laugh",
+          "name": {
+            "value": "laugh",
+            "synonyms": [
+              "hilarious",
+              "that's hilarious",
+              "laughs"
+            ]
+          }
+        },
+        {
+          "id": "mix_it_up",
+          "name": {
+            "value": "mix it up",
+            "synonyms": [
+              "stir",
+              "stir pastry",
+              "stir pastry ingredients",
+              "stir ingredients",
+              "stir up trouble",
+              "stir up some trouble"
+            ]
+          }
+        },
+        {
+          "id": "no",
+          "name": {
+            "value": "no",
+            "synonyms": [
+              "disagree",
+              "disagrees",
+              "no way",
+              "no way no time no how"
+            ]
+          }
+        },
+        {
+          "id": "no_you_didnt",
+          "name": {
+            "value": "no you didn't",
+            "synonyms": [
+              "sarcastic",
+              "attitude"
+            ]
+          }
+        },
+        {
+          "id": "oh_please",
+          "name": {
+            "value": "oh please",
+            "synonyms": [
+              "disappointment",
+              "alright already"
+            ]
+          }
+        },
+        {
+          "id": "pew_pew",
+          "name": {
+            "value": "pew pew",
+            "synonyms": [
+              "draw",
+              "draw gun",
+              "draw and shoot",
+              "quick draw"
+            ]
+          }
+        },
+        {
+          "id": "point",
+          "name": {
+            "value": "point",
+            "synonyms": [
+              "signal",
+              "signal something",
+              "that over there",
+              "that there",
+              "look",
+              "look over there"
+            ]
+          }
+        },
+        {
+          "id": "praise_the_gun",
+          "name": {
+            "value": "praise the gun",
+            "synonyms": [
+              "worship weapon"
+            ]
+          }
+        },
+        {
+          "id": "praise_the_light",
+          "name": {
+            "value": "praise the light",
+            "synonyms": [
+              "worship light"
+            ]
+          }
+        },
+        {
+          "id": "pumped_up",
+          "name": {
+            "value": "pumped up",
+            "synonyms": [
+              "ready",
+              "excitement",
+              "excited",
+              "all right",
+              "readiness"
+            ]
+          }
+        },
+        {
+          "id": "rude_taunt",
+          "name": {
+            "value": "rude taunt",
+            "synonyms": [
+              "impolite",
+              "taunt"
+            ]
+          }
+        },
+        {
+          "id": "sad",
+          "name": {
+            "value": "sad",
+            "synonyms": [
+              "sadness",
+              "feeling blue",
+              "cry",
+              "crying",
+              "cries"
+            ]
+          }
+        },
+        {
+          "id": "safe",
+          "name": {
+            "value": "safe",
+            "synonyms": [
+              "calls safe",
+              "baseball",
+              "he's safe"
+            ]
+          }
+        },
+        {
+          "id": "score",
+          "name": {
+            "value": "score",
+            "synonyms": [
+              "scored a goal",
+              "goal",
+              "count it",
+              "that counts"
+            ]
+          }
+        },
+        {
+          "id": "shadow_boxing",
+          "name": {
+            "value": "shadow boxing",
+            "synonyms": [
+              "boxing",
+              "spar",
+              "boxer",
+              "put em up"
+            ]
+          }
+        },
+        {
+          "id": "sorrow",
+          "name": {
+            "value": "sorrow",
+            "synonyms": [
+              "grief",
+              "cruel world",
+              "grieves"
+            ]
+          }
+        },
+        {
+          "id": "sumo",
+          "name": {
+            "value": "sumo",
+            "synonyms": [
+              "iron horse",
+              "iron horse stance",
+              "prepare for battle"
+            ]
+          }
+        },
+        {
+          "id": "swing",
+          "name": {
+            "value": "swing",
+            "synonyms": [
+              "pretending to swing",
+              "baseball bat",
+              "outta here",
+              "baseball"
+            ]
+          }
+        },
+        {
+          "id": "tantrum",
+          "name": {
+            "value": "tantrum",
+            "synonyms": [
+              "disbelief",
+              "stunned",
+              "stunned disbelief",
+              "throw a tantrum"
+            ]
+          }
+        },
+        {
+          "id": "thumbs_down",
+          "name": {
+            "value": "thumbs down",
+            "synonyms": [
+              "negative",
+              "don't think so",
+              "give thumbs down"
+            ]
+          }
+        },
+        {
+          "id": "thumbs_up",
+          "name": {
+            "value": "thumbs up",
+            "synonyms": [
+              "give thumbs up",
+              "positive",
+              "i could go for that"
+            ]
+          }
+        },
+        {
+          "id": "toe_tap",
+          "name": {
+            "value": "toe tap",
+            "synonyms": [
+              "impatience",
+              "impatient",
+              "we're waiting",
+              "waiting",
+              "waiting on watson"
+            ]
+          }
+        },
+        {
+          "id": "victory_cheer",
+          "name": {
+            "value": "victory cheer",
+            "synonyms": [
+              "celebration",
+              "achievement",
+              "cheers"
+            ]
+          }
+        },
+        {
+          "id": "watch_your_back",
+          "name": {
+            "value": "watch your back",
+            "synonyms": [
+              "warning",
+              "i'm warning you",
+              "your neck on the line",
+              "throat cut",
+              "cut throat"
+            ]
+          }
+        },
+        {
+          "id": "waving_taunt",
+          "name": {
+            "value": "waving taunt",
+            "synonyms": [
+              "get on my level"
+            ]
+          }
+        },
+        {
+          "id": "winded",
+          "name": {
+            "value": "winded",
+            "synonyms": [
+              "exhausted",
+              "exhaustion",
+              "i need a minute",
+              "i need a sec",
+              "hold up",
+              "hold up i need a sec",
+              "i need a second",
+              "wait"
+            ]
+          }
+        },
+        {
+          "id": "yawn",
+          "name": {
+            "value": "yawn",
+            "synonyms": [
+              "bored",
+              "so bored"
+            ]
+          }
+        },
+        {
+          "id": "yes",
+          "name": {
+            "value": "yes",
+            "synonyms": [
+              "nod",
+              "head nod",
+              "agree",
+              "agrees"
+            ]
+          }
+        },
+        {
+          "id": "fist_bump",
+          "name": {
+            "value": "fist bump",
+            "synonyms": [
+              "pound it",
+              "pound"
+            ]
+          }
+        },
+        {
+          "id": "flash",
+          "name": {
+            "value": "flash",
+            "synonyms": [
+              "flash cash",
+              "rain money",
+              "i got glimmer",
+              "i've got glimmer for days"
+            ]
+          }
+        },
+        {
+          "id": "tiny",
+          "name": {
+            "value": "tiny",
+            "synonyms": [
+              "running man"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INVENTORY_SHADER",
+      "values": [
+        {
+          "id": "18327496_64703388",
+          "name": {
+            "value": "18327496-64703388",
+            "synonyms": [
+              "one eighty three"
+            ]
+          }
+        },
+        {
+          "id": "aarus_passage",
+          "name": {
+            "value": "aaru's passage",
+            "synonyms": [
+              "Aarus Passage",
+              "aru's passage",
+              "arus passage"
+            ]
+          }
+        },
+        {
+          "id": "abydos_common",
+          "name": {
+            "value": "abydos common",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "achilles",
+          "name": {
+            "value": "achilles",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "amalthea",
+          "name": {
+            "value": "amalthea",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "amduat_ink",
+          "name": {
+            "value": "amduat ink",
+            "synonyms": [
+              "amudaut ink"
+            ]
+          }
+        },
+        {
+          "id": "anahata",
+          "name": {
+            "value": "anahata",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "antique_land",
+          "name": {
+            "value": "antique land",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "arctic_proxy",
+          "name": {
+            "value": "arctic proxy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "atlantean_5055",
+          "name": {
+            "value": "atlantean 5055",
+            "synonyms": [
+              "atlantean five o. fifty five",
+              "atlantean five o.",
+              "atlantean five zero five five"
+            ]
+          }
+        },
+        {
+          "id": "aurora_blur",
+          "name": {
+            "value": "aurora blur",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "autumn_splendor",
+          "name": {
+            "value": "autumn splendor",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "azura",
+          "name": {
+            "value": "azura",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "babylon_9191",
+          "name": {
+            "value": "babylon 9191",
+            "synonyms": [
+              "babylon nine one nine one",
+              "babylon ninety one ninety one"
+            ]
+          }
+        },
+        {
+          "id": "barrage",
+          "name": {
+            "value": "barrage",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "barrier_ethos",
+          "name": {
+            "value": "barrier ethos",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "beowulf",
+          "name": {
+            "value": "beowulf",
+            "synonyms": [
+              "beowolf"
+            ]
+          }
+        },
+        {
+          "id": "bittersteel",
+          "name": {
+            "value": "bittersteel",
+            "synonyms": [
+              "bitter steel",
+              "bittersteal",
+              "bitter steal"
+            ]
+          }
+        },
+        {
+          "id": "bloodpact",
+          "name": {
+            "value": "bloodpact",
+            "synonyms": [
+              "blood pact"
+            ]
+          }
+        },
+        {
+          "id": "blue_marble",
+          "name": {
+            "value": "blue marble",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "bright_laurel",
+          "name": {
+            "value": "bright laurel",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "broadsword",
+          "name": {
+            "value": "broadsword",
+            "synonyms": [
+              "broad sword"
+            ]
+          }
+        },
+        {
+          "id": "brushfire",
+          "name": {
+            "value": "brushfire",
+            "synonyms": [
+              "brush fire"
+            ]
+          }
+        },
+        {
+          "id": "burnt_marshmallow",
+          "name": {
+            "value": "burnt marshmallow",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "caelestis",
+          "name": {
+            "value": "caelestis",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "candlelight",
+          "name": {
+            "value": "candlelight",
+            "synonyms": [
+              "candle light"
+            ]
+          }
+        },
+        {
+          "id": "candy_apple",
+          "name": {
+            "value": "candy apple",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "carthage_0100",
+          "name": {
+            "value": "carthage 0100",
+            "synonyms": [
+              "carthage",
+              "carthage zero one zero zero",
+              "carthage o. one"
+            ]
+          }
+        },
+        {
+          "id": "chalcedony",
+          "name": {
+            "value": "chalcedony",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "chanson_de_geste",
+          "name": {
+            "value": "chanson de geste",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "chatterwhite",
+          "name": {
+            "value": "chatterwhite",
+            "synonyms": [
+              "chatter white"
+            ]
+          }
+        },
+        {
+          "id": "chrysanthemum",
+          "name": {
+            "value": "chrysanthemum",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cicero",
+          "name": {
+            "value": "cicero",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cleopatra_ak",
+          "name": {
+            "value": "cleopatra ak",
+            "synonyms": [
+              "cleopatra",
+              "cleopatra a. k."
+            ]
+          }
+        },
+        {
+          "id": "cryptographic",
+          "name": {
+            "value": "cryptographic",
+            "synonyms": [
+              "crypto graphic",
+              "crypto-graphic"
+            ]
+          }
+        },
+        {
+          "id": "cyan_stars",
+          "name": {
+            "value": "cyan stars",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cytherean_bloom",
+          "name": {
+            "value": "cytherean bloom",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "dance_of_bones",
+          "name": {
+            "value": "dance of bones",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "dawncaller",
+          "name": {
+            "value": "dawncaller",
+            "synonyms": [
+              "dawn caller",
+              "don caller"
+            ]
+          }
+        },
+        {
+          "id": "debt_unpaid",
+          "name": {
+            "value": "debt unpaid",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "devilswept",
+          "name": {
+            "value": "devilswept",
+            "synonyms": [
+              "devils wept",
+              "devil's wept",
+              "devil swept"
+            ]
+          }
+        },
+        {
+          "id": "feud_unfading",
+          "name": {
+            "value": "feud unfading",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "frostfire",
+          "name": {
+            "value": "frostfire",
+            "synonyms": [
+              "frost fire"
+            ]
+          }
+        },
+        {
+          "id": "ghast",
+          "name": {
+            "value": "ghast",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "gilgamesh",
+          "name": {
+            "value": "gilgamesh",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "glowhoo",
+          "name": {
+            "value": "glowhoo",
+            "synonyms": [
+              "glow hoo",
+              "glow who",
+              "glow hoe"
+            ]
+          }
+        },
+        {
+          "id": "god_of_war",
+          "name": {
+            "value": "god of war",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "goldspiral",
+          "name": {
+            "value": "goldspiral",
+            "synonyms": [
+              "gold spiral"
+            ]
+          }
+        },
+        {
+          "id": "hallow",
+          "name": {
+            "value": "hallow",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "imogens_fire",
+          "name": {
+            "value": "imogen's fire",
+            "synonyms": [
+              "imogens fire"
+            ]
+          }
+        },
+        {
+          "id": "infinite_link",
+          "name": {
+            "value": "infinite link",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "jester_apogee",
+          "name": {
+            "value": "jester apogee",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "judgement_cast",
+          "name": {
+            "value": "judgement cast",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "kingspyre",
+          "name": {
+            "value": "kingspyre",
+            "synonyms": [
+              "king spyre",
+              "king spire",
+              "kings pyre"
+            ]
+          }
+        },
+        {
+          "id": "kingswind",
+          "name": {
+            "value": "kingswind",
+            "synonyms": [
+              "kings wind",
+              "king's wind"
+            ]
+          }
+        },
+        {
+          "id": "knight_errant",
+          "name": {
+            "value": "knight errant",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "krokos",
+          "name": {
+            "value": "krokos",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "laurel_wreath",
+          "name": {
+            "value": "laurel wreath",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lion_dancer",
+          "name": {
+            "value": "lion dancer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lost_city",
+          "name": {
+            "value": "lost city",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lunar_elegy",
+          "name": {
+            "value": "lunar elegy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "magma",
+          "name": {
+            "value": "magma",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "malevolence",
+          "name": {
+            "value": "malevolence",
+            "synonyms": [
+              "male volence",
+              "mail volence",
+              "male violence"
+            ]
+          }
+        },
+        {
+          "id": "midas",
+          "name": {
+            "value": "midas",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "midnight_lumos",
+          "name": {
+            "value": "midnight lumos",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "million_million",
+          "name": {
+            "value": "million million",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mostly_cloudy",
+          "name": {
+            "value": "mostly cloudy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "nefertiti_ak",
+          "name": {
+            "value": "nefertiti ak",
+            "synonyms": [
+              "nefertiti a. k.",
+              "nefertiti"
+            ]
+          }
+        },
+        {
+          "id": "nineveh_8611",
+          "name": {
+            "value": "nineveh 8611",
+            "synonyms": [
+              "nineveh",
+              "nineveh eight six",
+              "nineveh eight six one one"
+            ]
+          }
+        },
+        {
+          "id": "oasis",
+          "name": {
+            "value": "oasis",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "pallas_victorious",
+          "name": {
+            "value": "pallas victorious",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "perilous_quest",
+          "name": {
+            "value": "perilous quest",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "phosphore",
+          "name": {
+            "value": "phosphore",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "polar_oak",
+          "name": {
+            "value": "polar oak",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "prism_dancer",
+          "name": {
+            "value": "prism dancer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "provincial_royale",
+          "name": {
+            "value": "provincial royale",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "refraction_melt",
+          "name": {
+            "value": "refraction melt",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "revenant",
+          "name": {
+            "value": "revenant",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "rosebright",
+          "name": {
+            "value": "rosebright",
+            "synonyms": [
+              "rose bright",
+              "rose brite"
+            ]
+          }
+        },
+        {
+          "id": "rosegold",
+          "name": {
+            "value": "rosegold",
+            "synonyms": [
+              "rose gold"
+            ]
+          }
+        },
+        {
+          "id": "sea_of_tears",
+          "name": {
+            "value": "sea of tears",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "shimmer",
+          "name": {
+            "value": "shimmer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "solarize",
+          "name": {
+            "value": "solarize",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sparklepony",
+          "name": {
+            "value": "sparklepony",
+            "synonyms": [
+              "sparkle pony"
+            ]
+          }
+        },
+        {
+          "id": "stolen_chalice",
+          "name": {
+            "value": "stolen chalice",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "substance_321",
+          "name": {
+            "value": "substance 321",
+            "synonyms": [
+              "substance",
+              "substance three two one"
+            ]
+          }
+        },
+        {
+          "id": "the_blast_of_war",
+          "name": {
+            "value": "the blast of war",
+            "synonyms": [
+              "blast of war"
+            ]
+          }
+        },
+        {
+          "id": "the_devoted",
+          "name": {
+            "value": "the devoted",
+            "synonyms": [
+              "devoted",
+              "de-voted"
+            ]
+          }
+        },
+        {
+          "id": "the_hanged_man",
+          "name": {
+            "value": "the hanged man",
+            "synonyms": [
+              "hanged man"
+            ]
+          }
+        },
+        {
+          "id": "the_nowhere",
+          "name": {
+            "value": "the nowhere",
+            "synonyms": [
+              "nowhere",
+              "no where"
+            ]
+          }
+        },
+        {
+          "id": "the_ointment",
+          "name": {
+            "value": "the ointment",
+            "synonyms": [
+              "ointment",
+              "oint mint",
+              "ointmint"
+            ]
+          }
+        },
+        {
+          "id": "the_old_guard",
+          "name": {
+            "value": "the old guard",
+            "synonyms": [
+              "old guard"
+            ]
+          }
+        },
+        {
+          "id": "the_queens_web",
+          "name": {
+            "value": "the queen's web",
+            "synonyms": [
+              "queen's web",
+              "queens web",
+              "the queens web"
+            ]
+          }
+        },
+        {
+          "id": "themisto",
+          "name": {
+            "value": "themisto",
+            "synonyms": [
+              "the misto"
+            ]
+          }
+        },
+        {
+          "id": "thunderdevil",
+          "name": {
+            "value": "thunderdevil",
+            "synonyms": [
+              "thunder devil"
+            ]
+          }
+        },
+        {
+          "id": "timeglass",
+          "name": {
+            "value": "timeglass",
+            "synonyms": [
+              "time glass"
+            ]
+          }
+        },
+        {
+          "id": "trial_by_ordeal",
+          "name": {
+            "value": "trial by ordeal",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "tristesse",
+          "name": {
+            "value": "tristesse",
+            "synonyms": [
+              "triste esse"
+            ]
+          }
+        },
+        {
+          "id": "tyre_4770",
+          "name": {
+            "value": "tyre 4770",
+            "synonyms": [
+              "tyre four seven",
+              "tyre four seven seven zero",
+              "tyre four seven seven o.",
+              "tire four seven",
+              "tire four seven seven zero",
+              "tire four seven seven o."
+            ]
+          }
+        },
+        {
+          "id": "undercity",
+          "name": {
+            "value": "undercity",
+            "synonyms": [
+              "under city"
+            ]
+          }
+        },
+        {
+          "id": "unquiet_spirit",
+          "name": {
+            "value": "unquiet spirit",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "valentine",
+          "name": {
+            "value": "valentine",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vallsgarde",
+          "name": {
+            "value": "vallsgarde",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vena_cava",
+          "name": {
+            "value": "vena cava",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "walkabout",
+          "name": {
+            "value": "walkabout",
+            "synonyms": [
+              "walk about"
+            ]
+          }
+        },
+        {
+          "id": "weldfire",
+          "name": {
+            "value": "weldfire",
+            "synonyms": [
+              "weld fire"
+            ]
+          }
+        },
+        {
+          "id": "white_tiger",
+          "name": {
+            "value": "white tiger",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "wolfcurse",
+          "name": {
+            "value": "wolfcurse",
+            "synonyms": [
+              "wolf curse",
+              "wolves curse",
+              "wolf's curse"
+            ]
+          }
+        },
+        {
+          "id": "yesternight",
+          "name": {
+            "value": "yesternight",
+            "synonyms": [
+              "yester night",
+              "yester knight"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INVENTORY_SHIP",
+      "values": [
+        {
+          "id": "80_proofreader",
+          "name": {
+            "value": "80 proofreader",
+            "synonyms": [
+              "eighty proof reader",
+              "eighty proofreader"
+            ]
+          }
+        },
+        {
+          "id": "act_on_instinct",
+          "name": {
+            "value": "act on instinct",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "agonarch_karve",
+          "name": {
+            "value": "agonarch karve",
+            "synonyms": [
+              "agonarch carveh"
+            ]
+          }
+        },
+        {
+          "id": "aries_ascendant",
+          "name": {
+            "value": "aries ascendant",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "armor_of_vows",
+          "name": {
+            "value": "armor of vows",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "aspect_of_glass",
+          "name": {
+            "value": "aspect of glass",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "atalantas_hunt",
+          "name": {
+            "value": "atalanta's hunt",
+            "synonyms": [
+              "atalantas hunt"
+            ]
+          }
+        },
+        {
+          "id": "bane_of_dark_gods",
+          "name": {
+            "value": "bane of dark gods",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "belisarius_defiant",
+          "name": {
+            "value": "belisarius defiant",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "birth_of_history",
+          "name": {
+            "value": "birth of history",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ceres_galliot",
+          "name": {
+            "value": "ceres galliot",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "chasing_infinity",
+          "name": {
+            "value": "chasing infinity",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "coldsnap_bkr",
+          "name": {
+            "value": "coldsnap bkr",
+            "synonyms": [
+              "cold snap",
+              "coldsnap"
+            ]
+          }
+        },
+        {
+          "id": "comitatus",
+          "name": {
+            "value": "comitatus",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "devils_due_bkr",
+          "name": {
+            "value": "devils' due bkr",
+            "synonyms": [
+              "devil's due",
+              "devils due",
+              "devils do",
+              "devil's do"
+            ]
+          }
+        },
+        {
+          "id": "draught_of_nectar",
+          "name": {
+            "value": "draught of nectar",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "dream_eater",
+          "name": {
+            "value": "dream eater",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ether_eater",
+          "name": {
+            "value": "ether eater",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "extinction_event",
+          "name": {
+            "value": "extinction event",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "fatal_vision",
+          "name": {
+            "value": "fatal vision",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "glass_minuet",
+          "name": {
+            "value": "glass minuet",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "gloriole_jump",
+          "name": {
+            "value": "gloriole jump",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "hebridean_thoughtcrime",
+          "name": {
+            "value": "hebridean thoughtcrime",
+            "synonyms": [
+              "hebridean thought crime",
+              "thoughtcrime",
+              "thought crime"
+            ]
+          }
+        },
+        {
+          "id": "high_and_flighty",
+          "name": {
+            "value": "high and flighty",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "hildian_seeker",
+          "name": {
+            "value": "hildian seeker",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ketch_me_if_you_can",
+          "name": {
+            "value": "ketch me if you can",
+            "synonyms": [
+              "catch me if you can"
+            ]
+          }
+        },
+        {
+          "id": "kingslayer_bkr",
+          "name": {
+            "value": "kingslayer bkr",
+            "synonyms": [
+              "kingslayer",
+              "king slayer",
+              "kings slayer",
+              "king's slayer"
+            ]
+          }
+        },
+        {
+          "id": "kondratyuks_escape",
+          "name": {
+            "value": "kondratyuk's escape",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "last_battle",
+          "name": {
+            "value": "last battle",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "light_in_the_abyss",
+          "name": {
+            "value": "light in the abyss",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "little_light",
+          "name": {
+            "value": "little light",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "longest_vigil",
+          "name": {
+            "value": "longest vigil",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lost_legacy",
+          "name": {
+            "value": "lost legacy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mind_bleacher",
+          "name": {
+            "value": "mind bleacher",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "nanophoenix",
+          "name": {
+            "value": "nanophoenix",
+            "synonyms": [
+              "nano phoenix"
+            ]
+          }
+        },
+        {
+          "id": "needle_and_thread",
+          "name": {
+            "value": "needle and thread",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "newsbreaker",
+          "name": {
+            "value": "newsbreaker",
+            "synonyms": [
+              "news breaker"
+            ]
+          }
+        },
+        {
+          "id": "order_theory",
+          "name": {
+            "value": "order theory",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "plasma_donor",
+          "name": {
+            "value": "plasma donor",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ripship_pardoner",
+          "name": {
+            "value": "ripship pardoner",
+            "synonyms": [
+              "rip ship pardoner"
+            ]
+          }
+        },
+        {
+          "id": "scorpio_miracle",
+          "name": {
+            "value": "scorpio miracle",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "seraphim_toaster",
+          "name": {
+            "value": "seraphim toaster",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "shark_whisperer",
+          "name": {
+            "value": "shark whisperer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sidereal_rumba",
+          "name": {
+            "value": "sidereal rumba",
+            "synonyms": [
+              "side real rumba"
+            ]
+          }
+        },
+        {
+          "id": "smokehouse_six",
+          "name": {
+            "value": "smokehouse six",
+            "synonyms": [
+              "smoke house six"
+            ]
+          }
+        },
+        {
+          "id": "space_age_mariner",
+          "name": {
+            "value": "space-age mariner",
+            "synonyms": [
+              "space age mariner"
+            ]
+          }
+        },
+        {
+          "id": "steel_atreus",
+          "name": {
+            "value": "steel atreus",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_climb",
+          "name": {
+            "value": "the climb",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_dirigible_incorrigible",
+          "name": {
+            "value": "the dirigible incorrigible",
+            "synonyms": [
+              "dirigible incorrigible"
+            ]
+          }
+        },
+        {
+          "id": "the_fermi_solution",
+          "name": {
+            "value": "the fermi solution",
+            "synonyms": [
+              "fermi solution"
+            ]
+          }
+        },
+        {
+          "id": "the_road_unraveled",
+          "name": {
+            "value": "the road unraveled",
+            "synonyms": [
+              "road unraveled"
+            ]
+          }
+        },
+        {
+          "id": "the_teilhard_war",
+          "name": {
+            "value": "the teilhard war",
+            "synonyms": [
+              "teilhard war"
+            ]
+          }
+        },
+        {
+          "id": "the_visible_hand",
+          "name": {
+            "value": "the visible hand",
+            "synonyms": [
+              "visible hand"
+            ]
+          }
+        },
+        {
+          "id": "ticktock_inquisitor",
+          "name": {
+            "value": "ticktock inquisitor",
+            "synonyms": [
+              "tick tock inquisitor"
+            ]
+          }
+        },
+        {
+          "id": "tiger_tiger",
+          "name": {
+            "value": "tiger tiger",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "tropos_gardener",
+          "name": {
+            "value": "tropos gardener",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vacuum_diagram",
+          "name": {
+            "value": "vacuum diagram",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vienna_singer",
+          "name": {
+            "value": "vienna singer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vintage_russian_soul",
+          "name": {
+            "value": "vintage russian soul",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "waning_star",
+          "name": {
+            "value": "waning star",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "wolf_hunter_bkr",
+          "name": {
+            "value": "wolf hunter bkr",
+            "synonyms": [
+              "wolf hunter"
+            ]
+          }
+        },
+        {
+          "id": "afv1_octavian",
+          "name": {
+            "value": "afv1 octavian",
+            "synonyms": [
+              "a. f. v. one octavian",
+              "a. f. v. one"
+            ]
+          }
+        },
+        {
+          "id": "afv2_octavian",
+          "name": {
+            "value": "afv2 octavian",
+            "synonyms": [
+              "a. f. v. two octavian",
+              "a. f. v. two"
+            ]
+          }
+        },
+        {
+          "id": "afv3_octavian",
+          "name": {
+            "value": "afv3 octavian",
+            "synonyms": [
+              "a. f. v. three",
+              "a. f. v. three octavian"
+            ]
+          }
+        },
+        {
+          "id": "arcadia_class_jumpship",
+          "name": {
+            "value": "arcadia class jumpship",
+            "synonyms": [
+              "first",
+              "original",
+              "worst",
+              "best",
+              "generic",
+              "regular",
+              "mission",
+              "arcadia",
+              "arcadia class",
+              "jump"
+            ]
+          }
+        },
+        {
+          "id": "aurora_lance",
+          "name": {
+            "value": "aurora lance",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ax19_slipper_misfit",
+          "name": {
+            "value": "ax19 slipper misfit",
+            "synonyms": [
+              "a. x. nineteen slipper misfit"
+            ]
+          }
+        },
+        {
+          "id": "ax19_spindle_demon",
+          "name": {
+            "value": "ax19 spindle demon",
+            "synonyms": [
+              "a. x. nineteen spindle demon"
+            ]
+          }
+        },
+        {
+          "id": "crypt_hammer",
+          "name": {
+            "value": "crypt hammer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "cx20_slipper_misfit",
+          "name": {
+            "value": "cx20 slipper misfit",
+            "synonyms": [
+              "c. x. twenty slipper misfit"
+            ]
+          }
+        },
+        {
+          "id": "cx20_spindle_demon",
+          "name": {
+            "value": "cx20 spindle demon",
+            "synonyms": [
+              "c. x. twenty spindle demon"
+            ]
+          }
+        },
+        {
+          "id": "eon_trespass",
+          "name": {
+            "value": "eon trespass",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ex21_slipper_misfit",
+          "name": {
+            "value": "ex21 slipper misfit",
+            "synonyms": [
+              "e. x. twenty one slipper misfit"
+            ]
+          }
+        },
+        {
+          "id": "ex21_spindle_demon",
+          "name": {
+            "value": "ex21 spindle demon",
+            "synonyms": [
+              "e. x. twenty one spindle demon"
+            ]
+          }
+        },
+        {
+          "id": "karuna_falling",
+          "name": {
+            "value": "karuna, falling",
+            "synonyms": [
+              "karuna falling"
+            ]
+          }
+        },
+        {
+          "id": "kestrel_class_ax",
+          "name": {
+            "value": "kestrel class ax",
+            "synonyms": [
+              "kestrel class a. x."
+            ]
+          }
+        },
+        {
+          "id": "kestrel_class_ax0",
+          "name": {
+            "value": "kestrel class ax0",
+            "synonyms": [
+              "kestrel class a. x. o.",
+              "kestrel class a. x. zero"
+            ]
+          }
+        },
+        {
+          "id": "kestrel_class_cx",
+          "name": {
+            "value": "kestrel class cx",
+            "synonyms": [
+              "kestrel class c. x."
+            ]
+          }
+        },
+        {
+          "id": "kestrel_class_cx0",
+          "name": {
+            "value": "kestrel class cx0",
+            "synonyms": [
+              "kestrel class c. x. o.",
+              "kestrel class c. x. zero"
+            ]
+          }
+        },
+        {
+          "id": "kestrel_class_ex",
+          "name": {
+            "value": "kestrel class ex",
+            "synonyms": [
+              "kestrel class e. x."
+            ]
+          }
+        },
+        {
+          "id": "kestrel_class_ex0",
+          "name": {
+            "value": "kestrel class ex0",
+            "synonyms": [
+              "kestrel class e. x. o.",
+              "kestrel class e. x. zero"
+            ]
+          }
+        },
+        {
+          "id": "laughing_behind_your_back",
+          "name": {
+            "value": "laughing behind your back",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "lrv1_javelin",
+          "name": {
+            "value": "lrv1 javelin",
+            "synonyms": [
+              "l. r. v. one javelin"
+            ]
+          }
+        },
+        {
+          "id": "lrv2_javelin",
+          "name": {
+            "value": "lrv2 javelin",
+            "synonyms": [
+              "l. r. v. two javelin"
+            ]
+          }
+        },
+        {
+          "id": "lrv3_javelin",
+          "name": {
+            "value": "lrv3 javelin",
+            "synonyms": [
+              "l. r. v. three javelin"
+            ]
+          }
+        },
+        {
+          "id": "ns22_cloud_errant",
+          "name": {
+            "value": "ns22 cloud errant",
+            "synonyms": [
+              "n. s. twenty two cloud errant"
+            ]
+          }
+        },
+        {
+          "id": "ns44_cloud_errant",
+          "name": {
+            "value": "ns44 cloud errant",
+            "synonyms": [
+              "n. s. fourty four cloud errant"
+            ]
+          }
+        },
+        {
+          "id": "ns66_cloud_errant",
+          "name": {
+            "value": "ns66 cloud errant",
+            "synonyms": [
+              "n. s. sixty six cloud errant"
+            ]
+          }
+        },
+        {
+          "id": "ns22_high_water",
+          "name": {
+            "value": "ns22 high water",
+            "synonyms": [
+              "n. s. twenty two high water"
+            ]
+          }
+        },
+        {
+          "id": "ns44_high_water",
+          "name": {
+            "value": "ns44 high water",
+            "synonyms": [
+              "n. s. fourty four high water"
+            ]
+          }
+        },
+        {
+          "id": "ns66_high_water",
+          "name": {
+            "value": "ns66 high water",
+            "synonyms": [
+              "n. s. sixty six high water"
+            ]
+          }
+        },
+        {
+          "id": "outrageous_fortune",
+          "name": {
+            "value": "outrageous fortune",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "phaeton_class_v1",
+          "name": {
+            "value": "phaeton class v1",
+            "synonyms": [
+              "phaeton class v. one"
+            ]
+          }
+        },
+        {
+          "id": "phaeton_class_v1.1",
+          "name": {
+            "value": "phaeton class v1.1",
+            "synonyms": [
+              "phaeton class v. one dot one",
+              "phaeton class v. one point one"
+            ]
+          }
+        },
+        {
+          "id": "phaeton_class_v2",
+          "name": {
+            "value": "phaeton class v2",
+            "synonyms": [
+              "phaeton class v. two"
+            ]
+          }
+        },
+        {
+          "id": "phaeton_class_v2.1",
+          "name": {
+            "value": "phaeton class v2.1",
+            "synonyms": [
+              "phaeton class v. two dot one",
+              "phaeton class v. two point one"
+            ]
+          }
+        },
+        {
+          "id": "phaeton_class_v3",
+          "name": {
+            "value": "phaeton class v3",
+            "synonyms": [
+              "phaeton class v. three"
+            ]
+          }
+        },
+        {
+          "id": "phaeton_class_v3.1",
+          "name": {
+            "value": "phaeton class v3.1",
+            "synonyms": [
+              "phaeton class v. three dot one",
+              "phaeton class v. three point one"
+            ]
+          }
+        },
+        {
+          "id": "quite_content_damsel",
+          "name": {
+            "value": "quite content damsel",
+            "synonyms": [
+              "damsel",
+              "quite content"
+            ]
+          }
+        },
+        {
+          "id": "regulus_class_22a",
+          "name": {
+            "value": "regulus class 22a",
+            "synonyms": [
+              "regulus class twenty two a."
+            ]
+          }
+        },
+        {
+          "id": "regulus_class_44b",
+          "name": {
+            "value": "regulus class 44b",
+            "synonyms": [
+              "regulus class fourty four b.",
+              "regulus class fourty four be",
+              "regulus class fourty four bee"
+            ]
+          }
+        },
+        {
+          "id": "regulus_class_55",
+          "name": {
+            "value": "regulus class 55",
+            "synonyms": [
+              "regulus class fifty five"
+            ]
+          }
+        },
+        {
+          "id": "regulus_class_66c",
+          "name": {
+            "value": "regulus class 66c",
+            "synonyms": [
+              "regulus class sixty six c.",
+              "regulus class sixty six see",
+              "regulus class sixty six sea"
+            ]
+          }
+        },
+        {
+          "id": "regulus_class_77",
+          "name": {
+            "value": "regulus class 77",
+            "synonyms": [
+              "regulus class seventy seven"
+            ]
+          }
+        },
+        {
+          "id": "regulus_class_99",
+          "name": {
+            "value": "regulus class 99",
+            "synonyms": [
+              "regulus class ninety nine"
+            ]
+          }
+        },
+        {
+          "id": "rope_to_heaven",
+          "name": {
+            "value": "rope to heaven",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "the_fangs_of_nyx",
+          "name": {
+            "value": "the fangs of nyx",
+            "synonyms": [
+              "fangs of nyx",
+              "the fangs of nix",
+              "fangs of nix"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "INVENTORY_SPARROW",
+      "values": [
+        {
+          "id": "arecibo_answer",
+          "name": {
+            "value": "arecibo answer",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "days_of_wind",
+          "name": {
+            "value": "days of wind",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "eternally_assured_destruction",
+          "name": {
+            "value": "eternally assured destruction",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ev_35_arcrunner",
+          "name": {
+            "value": "ev-35 arcrunner",
+            "synonyms": [
+              "E. V. thirty five arc runner",
+              "E. V. thirty five arcrunner",
+              "arcrunner",
+              "arc runner",
+              "E. V. thirty five"
+            ]
+          }
+        },
+        {
+          "id": "ev_36_solscout",
+          "name": {
+            "value": "ev-36 solscout",
+            "synonyms": [
+              "E. V. thirty six sol scout",
+              "E. V. thirty six solscout",
+              "E. V. thirty six soul scout",
+              "soul scout",
+              "sol scout",
+              "solscout",
+              "E. V. thirty six"
+            ]
+          }
+        },
+        {
+          "id": "ev_37_voidstreak",
+          "name": {
+            "value": "ev-37 voidstreak",
+            "synonyms": [
+              "void streak",
+              "E. V. thirty seven voidstreak",
+              "E. V. thirty seven void streak",
+              "E. V. thirty seven"
+            ]
+          }
+        },
+        {
+          "id": "ev_34_vector_infinite",
+          "name": {
+            "value": "ev-34 vector infinite",
+            "synonyms": [
+              "E. V. thirty four vector infinite",
+              "E. V. thirty four vector",
+              "vector infinite",
+              "vector",
+              "E. V. thirty four"
+            ]
+          }
+        },
+        {
+          "id": "e_47_prismatica",
+          "name": {
+            "value": "e-47 prismatica",
+            "synonyms": [
+              "E. fourty seven prismatica",
+              "prismatica",
+              "prismatic",
+              "E. fourty seven",
+              "E. V. fourty seven",
+              "E. V. fourty seven prismatica"
+            ]
+          }
+        },
+        {
+          "id": "ev_38_laurelbearer",
+          "name": {
+            "value": "ev-38 laurelbearer",
+            "synonyms": [
+              "E. V. thirty eight laurel bearer",
+              "E. V. thirty eight laurel",
+              "laurel bearer",
+              "laurelbearer",
+              "E. V. thirty eight"
+            ]
+          }
+        },
+        {
+          "id": "ev_39_lumos",
+          "name": {
+            "value": "ev-39 lumos",
+            "synonyms": [
+              "E. V. thirty nine lumos",
+              "lumos",
+              "E. V. thirty nine"
+            ]
+          }
+        },
+        {
+          "id": "ev_40_snowscream",
+          "name": {
+            "value": "ev-40 snowscream",
+            "synonyms": [
+              "E. V. fourty snowscream",
+              "snowscream",
+              "snow scream",
+              "E. V. fourty snow scream",
+              "E. V. fourty"
+            ]
+          }
+        },
+        {
+          "id": "ev_42_nightsteed",
+          "name": {
+            "value": "ev-42 nightsteed",
+            "synonyms": [
+              "E. V. fourty two nightsteed",
+              "E. V. fourty two night steed",
+              "night steed",
+              "nightsteed",
+              "E. V. fourty two"
+            ]
+          }
+        },
+        {
+          "id": "ev_43_lightrunner",
+          "name": {
+            "value": "ev-43 lightrunner",
+            "synonyms": [
+              "E. V. fourty three",
+              "E. V. fourty three lightrunner",
+              "E. V. fourty three light runner",
+              "lightrunner",
+              "light runner"
+            ]
+          }
+        },
+        {
+          "id": "ev_44_firefly",
+          "name": {
+            "value": "ev-44 firefly",
+            "synonyms": [
+              "E. V. fourty four firefly",
+              "E. V. fourty four fire fly",
+              "firefly",
+              "fire fly",
+              "E. V. fourty four"
+            ]
+          }
+        },
+        {
+          "id": "ev_45_bitfire",
+          "name": {
+            "value": "ev-45 bitfire",
+            "synonyms": [
+              "E. V. fourty five bitfire",
+              "E. V. fourty five bit fire",
+              "E. V. fourty five",
+              "bitfire",
+              "bit fire"
+            ]
+          }
+        },
+        {
+          "id": "ev_46_bitstorm",
+          "name": {
+            "value": "ev-46 bitstorm",
+            "synonyms": [
+              "E. V. fourty six bitstorm",
+              "E. V. fourty six bit storm",
+              "E. V. fourty six",
+              "bitstorm",
+              "bit storm"
+            ]
+          }
+        },
+        {
+          "id": "ev_48_kings_touch",
+          "name": {
+            "value": "ev-48 king's touch",
+            "synonyms": [
+              "E. V. fourty eight king's touch",
+              "E. V. fourty eight kings touch",
+              "E. V. fourty eight",
+              "king's touch",
+              "kings touch"
+            ]
+          }
+        },
+        {
+          "id": "ev_49_phantasm",
+          "name": {
+            "value": "ev-49 phantasm",
+            "synonyms": [
+              "E. V. fourty nine phantasm",
+              "E. V. fourty nine",
+              "phantasm"
+            ]
+          }
+        },
+        {
+          "id": "ev_50_mirage",
+          "name": {
+            "value": "ev-50 mirage",
+            "synonyms": [
+              "E. V. fifty mirage",
+              "E. V. fifty",
+              "mirage"
+            ]
+          }
+        },
+        {
+          "id": "ev_51_sunstroke",
+          "name": {
+            "value": "ev-51 sunstroke",
+            "synonyms": [
+              "E. V. fifty one",
+              "E. V. fifty one sunstroke",
+              "E. V. fifty one sun stroke",
+              "sun stroke",
+              "sunstroke"
+            ]
+          }
+        },
+        {
+          "id": "ev_52_lavabird",
+          "name": {
+            "value": "ev-52 lavabird",
+            "synonyms": [
+              "E. V. fifty two",
+              "E. V. fifty two lavabird",
+              "E. V. fifty two lava bird",
+              "lavabird",
+              "lava bird"
+            ]
+          }
+        },
+        {
+          "id": "flamecourser",
+          "name": {
+            "value": "flamecourser",
+            "synonyms": [
+              "flame courser"
+            ]
+          }
+        },
+        {
+          "id": "gjallarwing",
+          "name": {
+            "value": "gjallarwing",
+            "synonyms": [
+              "gally wing",
+              "gallar wing"
+            ]
+          }
+        },
+        {
+          "id": "s_13_graverobber",
+          "name": {
+            "value": "s-13 graverobber",
+            "synonyms": [
+              "S. thirteen graverobber",
+              "graverobber",
+              "grave robber",
+              "S. thirteen grave robber"
+            ]
+          }
+        },
+        {
+          "id": "s_34_ravensteel",
+          "name": {
+            "value": "s-34 ravensteel",
+            "synonyms": [
+              "S. thirty four ravensteel",
+              "S. thirty four",
+              "S. thirty four raven steel",
+              "S. thirty four raven steal",
+              "ravensteel",
+              "raven steel",
+              "ravensteal",
+              "raven steal",
+              "S. thirty four ravensteal"
+            ]
+          }
+        },
+        {
+          "id": "s_35_aeon_glow",
+          "name": {
+            "value": "s-35 aeon glow",
+            "synonyms": [
+              "S. thirty five aeon glow",
+              "aeon glow"
+            ]
+          }
+        },
+        {
+          "id": "s_35_jealousy",
+          "name": {
+            "value": "s-35 jealousy",
+            "synonyms": [
+              "S. thirty five jealousy",
+              "jealous",
+              "jealousy",
+              "jelly"
+            ]
+          }
+        },
+        {
+          "id": "s_38_regal_bearing",
+          "name": {
+            "value": "s-38 regal bearing",
+            "synonyms": [
+              "S. thirty eight regal bearing",
+              "S. thirty eight",
+              "regal bearing"
+            ]
+          }
+        },
+        {
+          "id": "s_39_autumn_glow",
+          "name": {
+            "value": "s-39 autumn glow",
+            "synonyms": [
+              "S. thirty nine autumn glow",
+              "autumn glow"
+            ]
+          }
+        },
+        {
+          "id": "s_39_lightrider",
+          "name": {
+            "value": "s-39 lightrider",
+            "synonyms": [
+              "S. thirty nine lightrider",
+              "S. thirty nine light rider",
+              "lightrider",
+              "light rider"
+            ]
+          }
+        },
+        {
+          "id": "s_40_iron_revelry",
+          "name": {
+            "value": "s-40 iron revelry",
+            "synonyms": [
+              "S. fourty iron revelry",
+              "S. fourty",
+              "iron revelry"
+            ]
+          }
+        },
+        {
+          "id": "s_41_poison_apple",
+          "name": {
+            "value": "s-41 poison apple",
+            "synonyms": [
+              "S. fourty one poison apple",
+              "S. fourty one",
+              "poison apple"
+            ]
+          }
+        },
+        {
+          "id": "sr_0_swiftriver",
+          "name": {
+            "value": "sr-0 swiftriver",
+            "synonyms": [
+              "S. R. zero swiftriver",
+              "S. R. zero swift river",
+              "swiftriver",
+              "swift river",
+              "S. R. oh",
+              "S. R. oh swiftriver",
+              "S. R. oh swift river",
+              "S. R. O. swiftriver",
+              "S. R. O. swift river"
+            ]
+          }
+        },
+        {
+          "id": "velumbra",
+          "name": {
+            "value": "velumbra",
+            "synonyms": [
+              "vel umbra",
+              "veil umbra"
+            ]
+          }
+        },
+        {
+          "id": "xv0_timebreaker",
+          "name": {
+            "value": "xv0 timebreaker",
+            "synonyms": [
+              "X. V. O. timebreaker",
+              "X. V. O. time breaker",
+              "X. V. zero timebreaker",
+              "X. V. zero time breaker",
+              "timebreaker",
+              "time breaker",
+              "X. V. zero",
+              "X. V. O."
+            ]
+          }
+        },
+        {
+          "id": "xv1_usurper",
+          "name": {
+            "value": "xv1 usurper",
+            "synonyms": [
+              "X. V. one",
+              "X. V. one usurper",
+              "usurper"
+            ]
+          }
+        },
+        {
+          "id": "xv2_replicator",
+          "name": {
+            "value": "xv2 replicator",
+            "synonyms": [
+              "X. V. two",
+              "X. V. two replicator",
+              "replicator"
+            ]
+          }
+        },
+        {
+          "id": "s_20_cavalier",
+          "name": {
+            "value": "s-20 cavalier",
+            "synonyms": [
+              "S. twenty cavalier"
+            ]
+          }
+        },
+        {
+          "id": "s_20_nomad",
+          "name": {
+            "value": "s-20 nomad",
+            "synonyms": [
+              "S. twenty nomad"
+            ]
+          }
+        },
+        {
+          "id": "s_20_seeker",
+          "name": {
+            "value": "s-20 seeker",
+            "synonyms": [
+              "S. twenty seeker"
+            ]
+          }
+        },
+        {
+          "id": "s_21_cavalier",
+          "name": {
+            "value": "s-21 cavalier",
+            "synonyms": [
+              "S. twenty one cavalier"
+            ]
+          }
+        },
+        {
+          "id": "s_21_nomad",
+          "name": {
+            "value": "s-21 nomad",
+            "synonyms": [
+              "S. twenty one nomad"
+            ]
+          }
+        },
+        {
+          "id": "s_21_seeker",
+          "name": {
+            "value": "s-21 seeker",
+            "synonyms": [
+              "S. twenty one seeker"
+            ]
+          }
+        },
+        {
+          "id": "s_22_cavalier",
+          "name": {
+            "value": "s-22 cavalier",
+            "synonyms": [
+              "S. twenty two cavalier"
+            ]
+          }
+        },
+        {
+          "id": "s_22_nomad",
+          "name": {
+            "value": "s-22 nomad",
+            "synonyms": [
+              "S. twenty two nomad"
+            ]
+          }
+        },
+        {
+          "id": "s_22_seeker",
+          "name": {
+            "value": "s-22 seeker",
+            "synonyms": [
+              "S. twenty two seeker"
+            ]
+          }
+        },
+        {
+          "id": "s_30c_phoenix",
+          "name": {
+            "value": "s-30c phoenix",
+            "synonyms": [
+              "S. thirty C. phoenix",
+              "S. thirty C."
+            ]
+          }
+        },
+        {
+          "id": "s_31c_phoenix",
+          "name": {
+            "value": "s-31c phoenix",
+            "synonyms": [
+              "S. thirty one C. phoenix",
+              "S. thirty one C."
+            ]
+          }
+        },
+        {
+          "id": "s_32c_phoenix",
+          "name": {
+            "value": "s-32c phoenix",
+            "synonyms": [
+              "S. thirty two C. phoenix",
+              "S. thirty two C."
+            ]
+          }
+        },
+        {
+          "id": "sparrow_s_10",
+          "name": {
+            "value": "sparrow s-10",
+            "synonyms": [
+              "Sparrow S. ten",
+              "S. ten",
+              "worst",
+              "best",
+              "regular",
+              "generic",
+              "original",
+              "first"
+            ]
+          }
+        },
+        {
+          "id": "sparrow_s_30v",
+          "name": {
+            "value": "sparrow s-30v",
+            "synonyms": [
+              "sparrow S. thirty V.",
+              "S. thirty V.",
+              "thirty V."
+            ]
+          }
+        },
+        {
+          "id": "sparrow_s_31v",
+          "name": {
+            "value": "sparrow s-31v",
+            "synonyms": [
+              "thirty one V.",
+              "S. thirty one V.",
+              "sparrow S. thirty one V."
+            ]
+          }
+        },
+        {
+          "id": "sparrow_s_32v",
+          "name": {
+            "value": "sparrow s-32v",
+            "synonyms": [
+              "sparrow S. thirty two V.",
+              "S. thirty two V.",
+              "thirty two V."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "LOADOUT",
+      "values": [
+        {
+          "id": "trials",
+          "name": {
+            "value": "trials",
+            "synonyms": [
+              "trials of osiris",
+              "trials of the nine",
+              "tyrrells have a cyrus",
+              "tyrrells",
+              "cyrus",
+              "trowels",
+              "trowels of cyrus",
+              "trials",
+              "for trials",
+              "for trials of osiris",
+              "for trials of the nine"
+            ]
+          }
+        },
+        {
+          "id": "iron_banner",
+          "name": {
+            "value": "iron banner",
+            "synonyms": [
+              "iron banner",
+              "iron banana",
+              "lord salad man's party",
+              "iron banner gear",
+              "iron banner",
+              "for iron banner",
+              "for iron banana"
+            ]
+          }
+        },
+        {
+          "id": "quick_play",
+          "name": {
+            "value": "quick play",
+            "synonyms": [
+              "quick play",
+              "crucible",
+              "p. v. p.",
+              "quick play",
+              "quick",
+              "for quick play",
+              "for p. v. p.",
+              "for crucible"
+            ]
+          }
+        },
+        {
+          "id": "competitive_play",
+          "name": {
+            "value": "competitive play",
+            "synonyms": [
+              "ranked",
+              "ranked match",
+              "ranked matches",
+              "ranked playlist",
+              "competitive play",
+              "competitive",
+              "for competitive play",
+              "for ranked matches",
+              "for ranked playlist"
+            ]
+          }
+        },
+        {
+          "id": "strikes",
+          "name": {
+            "value": "strikes",
+            "synonyms": [
+              "p. v. e.",
+              "strikes",
+              "strike",
+              "for strikes"
+            ]
+          }
+        },
+        {
+          "id": "patrol",
+          "name": {
+            "value": "patrol",
+            "synonyms": [
+              "farm",
+              "the farm",
+              "flashpoints",
+              "flashpoint",
+              "flash point",
+              "flash points",
+              "adventure",
+              "adventures",
+              "public event",
+              "public events",
+              "lost sector",
+              "lost sectors",
+              "patrol",
+              "for patrol",
+              "for lost sectors",
+              "for public events",
+              "for adventures",
+              "for flash points",
+              "for the farm"
+            ]
+          }
+        },
+        {
+          "id": "favorite",
+          "name": {
+            "value": "favorite",
+            "synonyms": [
+              "favourite",
+              "favorite",
+              "for favorite",
+              "for favorites"
+            ]
+          }
+        },
+        {
+          "id": "default",
+          "name": {
+            "value": "default",
+            "synonyms": [
+              "custom",
+              "default",
+              "for default",
+              "for custom"
+            ]
+          }
+        },
+        {
+          "id": "wrath_of_the_machine",
+          "name": {
+            "value": "wrath of the machine",
+            "synonyms": [
+              "nanomania",
+              "spliced",
+              "siva",
+              "red miasma",
+              "perfected siva",
+              "red misama",
+              "misama",
+              "miasma",
+              "spliced cosmoclast",
+              "cosmoclast",
+              "spliced nanomania",
+              "spliced red misama",
+              "spliced red miasma",
+              "wrath of the machine",
+              "wrath",
+              "machine",
+              "for wrath of the machine"
+            ]
+          }
+        },
+        {
+          "id": "kings_fall",
+          "name": {
+            "value": "king's fall",
+            "synonyms": [
+              "war numens",
+              "harrowed",
+              "dark hallow",
+              "darkhallow",
+              "kings fall",
+              "golgoroth",
+              "golgorath",
+              "daughters of oryx",
+              "totems",
+              "oryx",
+              "king's fall",
+              "for kings fall"
+            ]
+          }
+        },
+        {
+          "id": "crotas_end",
+          "name": {
+            "value": "crota's end",
+            "synonyms": [
+              "cuirass",
+              "curasis",
+              "death singers",
+              "deathsingers",
+              "deathsinger's",
+              "crotas end",
+              "chronos and",
+              "chronos",
+              "chronos end",
+              "crota's end",
+              "for crotas end",
+              "for chronos end",
+              "kuroda",
+              "kurodas end",
+              "a crow does and",
+              "crow does"
+            ]
+          }
+        },
+        {
+          "id": "vault_of_glass",
+          "name": {
+            "value": "vault of glass",
+            "synonyms": [
+              "prime zealot",
+              "kabers",
+              "kabrs",
+              "ka beers",
+              "hezen",
+              "hezen lords",
+              "v. o. g.",
+              "both the glass",
+              "vault",
+              "glass",
+              "Vltava",
+              "Vltava of glass",
+              "a Vltava glass",
+              "vault of glass",
+              "volt of glass",
+              "volt",
+              "for volt",
+              "for vault",
+              "for vault of glass",
+              "for Vltava",
+              "for both the glass",
+              "volta of glass",
+              "for volta",
+              "for volta of glass",
+              "a of glass",
+              "both of my s."
+            ]
+          }
+        },
+        {
+          "id": "desolate",
+          "name": {
+            "value": "desolate",
+            "synonyms": [
+              "taken",
+              "taken shiver",
+              "desolate",
+              "for desolate",
+              "for taken",
+              "for taken shiver",
+              "taking",
+              "taking armor"
+            ]
+          }
+        },
+        {
+          "id": "arc_burn",
+          "name": {
+            "value": "arc burn",
+            "synonyms": [
+              "arc",
+              "arc burn",
+              "ark"
+            ]
+          }
+        },
+        {
+          "id": "solar_burn",
+          "name": {
+            "value": "solar burn",
+            "synonyms": [
+              "solar",
+              "solar burn"
+            ]
+          }
+        },
+        {
+          "id": "void_burn",
+          "name": {
+            "value": "void burn",
+            "synonyms": [
+              "void",
+              "void burn",
+              "devoid",
+              "avoid",
+              "avoid burn"
+            ]
+          }
+        },
+        {
+          "id": "leviathan",
+          "name": {
+            "value": "leviathan",
+            "synonyms": [
+              "leviathan",
+              "for leviathan",
+              "for the leviathan"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "TYPE_GESTURE",
+      "values": [
+        {
+          "id": "dance",
+          "name": {
+            "value": "Dance",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "emote",
+          "name": {
+            "value": "Emote",
+            "synonyms": [
+              "e mote",
+              "mote"
+            ]
+          }
+        },
+        {
+          "id": "gesture",
+          "name": {
+            "value": "Gesture",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "WEAPON_EXOTIC",
+      "values": [
+        {
+          "id": "abbadon",
+          "name": {
+            "value": "abbadon",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "abyss_defiant_adept",
+          "name": {
+            "value": "abyss defiant adept",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "ace_of_spades",
+          "name": {
+            "value": "ace of spades",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "anguish_of_drystan_adept",
+          "name": {
+            "value": "anguish of drystan adept",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "atheons_epilogue_adept",
+          "name": {
+            "value": "atheons epilogue adept",
+            "synonyms": [
+              "atheon's epilogue adept",
+              "atheon's epilogue"
+            ]
+          }
+        },
+        {
+          "id": "bad_juju",
+          "name": {
+            "value": "bad juju",
+            "synonyms": [
+              "bad jew jew"
+            ]
+          }
+        },
+        {
+          "id": "black_spindle",
+          "name": {
+            "value": "black spindle",
+            "synonyms": [
+              "black hammer"
+            ]
+          }
+        },
+        {
+          "id": "bolt_caster",
+          "name": {
+            "value": "bolt caster",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "chaos_dogma",
+          "name": {
+            "value": "chaos dogma",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "dark_drinker",
+          "name": {
+            "value": "dark drinker",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "doom_of_chelchis_adept",
+          "name": {
+            "value": "doom of chelchis adept",
+            "synonyms": [
+              "doom of chelchis"
+            ]
+          }
+        },
+        {
+          "id": "dragons_breath",
+          "name": {
+            "value": "dragons breath",
+            "synonyms": [
+              "dragon's breath"
+            ]
+          }
+        },
+        {
+          "id": "dregs_promise",
+          "name": {
+            "value": "dregs promise",
+            "synonyms": [
+              "dreg's promise"
+            ]
+          }
+        },
+        {
+          "id": "fabian_strategy",
+          "name": {
+            "value": "fabian strategy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "fang_of_ir_yut_adept",
+          "name": {
+            "value": "fang of ir yut adept",
+            "synonyms": [
+              "fang of ir yut"
+            ]
+          }
+        },
+        {
+          "id": "fate_of_all_fools",
+          "name": {
+            "value": "fate of all fools",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "fatebringer_adept",
+          "name": {
+            "value": "fatebringer adept",
+            "synonyms": [
+              "fatebringer",
+              "fate bringer"
+            ]
+          }
+        },
+        {
+          "id": "fever_and_remedy",
+          "name": {
+            "value": "fever and remedy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "genesis_chain",
+          "name": {
+            "value": "genesis chain",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "gjallarhorn",
+          "name": {
+            "value": "gjallarhorn",
+            "synonyms": [
+              "gally",
+              "gallar horn",
+              "galler horn"
+            ]
+          }
+        },
+        {
+          "id": "hard_light",
+          "name": {
+            "value": "hard light",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "hawkmoon",
+          "name": {
+            "value": "hawkmoon",
+            "synonyms": [
+              "hawk moon",
+              "hawk on"
+            ]
+          }
+        },
+        {
+          "id": "hereafter",
+          "name": {
+            "value": "hereafter",
+            "synonyms": [
+              "hear after"
+            ]
+          }
+        },
+        {
+          "id": "ice_breaker",
+          "name": {
+            "value": "ice breaker",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "invective",
+          "name": {
+            "value": "invective",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "khvostov_7g_0x",
+          "name": {
+            "value": "khvostov 7g-0x",
+            "synonyms": [
+              "khvostov",
+              "ka vo stov",
+              "ka vo stove"
+            ]
+          }
+        },
+        {
+          "id": "lord_of_wolves",
+          "name": {
+            "value": "lord of wolves",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "mida_multi_tool",
+          "name": {
+            "value": "mida multi-tool",
+            "synonyms": [
+              "mida",
+              "mida multitool",
+              "mida multi tool"
+            ]
+          }
+        },
+        {
+          "id": "monte_carlo",
+          "name": {
+            "value": "monte carlo",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "necrochasm",
+          "name": {
+            "value": "necrochasm",
+            "synonyms": [
+              "necro-chasm",
+              "necro chasm"
+            ]
+          }
+        },
+        {
+          "id": "nemesis_star",
+          "name": {
+            "value": "nemesis star",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "no_land_beyond",
+          "name": {
+            "value": "no land beyond",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "no_time_to_explain",
+          "name": {
+            "value": "no time to explain",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "nova_mortis",
+          "name": {
+            "value": "nova mortis",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "outbreak_prime",
+          "name": {
+            "value": "outbreak prime",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "oversoul_edict_adept",
+          "name": {
+            "value": "oversoul edict adept",
+            "synonyms": [
+              "oversoul edict",
+              "over soul edict"
+            ]
+          }
+        },
+        {
+          "id": "patience_and_time",
+          "name": {
+            "value": "patience and time",
+            "synonyms": [
+              "patience"
+            ]
+          }
+        },
+        {
+          "id": "plan_c",
+          "name": {
+            "value": "plan c",
+            "synonyms": [
+              "plan c.",
+              "plan-c"
+            ]
+          }
+        },
+        {
+          "id": "pocket_infinity",
+          "name": {
+            "value": "pocket infinity",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "praedyths_timepiece_adept",
+          "name": {
+            "value": "praedyths timepiece adept",
+            "synonyms": [
+              "praedyth's timepiece adept",
+              "praedyth's timepiece",
+              "praedyths timepiece",
+              "pray deaths time piece",
+              "pray deaths time peace",
+              "time peace",
+              "time piece"
+            ]
+          }
+        },
+        {
+          "id": "queenbreakers_bow",
+          "name": {
+            "value": "queenbreakers bow",
+            "synonyms": [
+              "queenbreaker's bow",
+              "queens breaker's",
+              "queen's breakers"
+            ]
+          }
+        },
+        {
+          "id": "raze_lighter",
+          "name": {
+            "value": "raze lighter",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "red_death",
+          "name": {
+            "value": "red death",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "sleeper_simulant",
+          "name": {
+            "value": "sleeper simulant",
+            "synonyms": [
+              "sleeper stimulant",
+              "sleeper"
+            ]
+          }
+        },
+        {
+          "id": "smite_of_merain_adept",
+          "name": {
+            "value": "smite of merain adept",
+            "synonyms": [
+              "smite of merain",
+              "smite"
+            ]
+          }
+        },
+        {
+          "id": "steel_medulla",
+          "name": {
+            "value": "steel medulla",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "super_good_advice",
+          "name": {
+            "value": "super good advice",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "suros_regime",
+          "name": {
+            "value": "suros regime",
+            "synonyms": [
+              "suros"
+            ]
+          }
+        },
+        {
+          "id": "telesto",
+          "name": {
+            "value": "telesto",
+            "synonyms": [
+              "tiesto"
+            ]
+          }
+        },
+        {
+          "id": "the_fourth_horseman",
+          "name": {
+            "value": "the_fourth_horseman",
+            "synonyms": [
+              "fourth horseman",
+              "4th horseman"
+            ]
+          }
+        },
+        {
+          "id": "the_chaperone",
+          "name": {
+            "value": "the chaperone",
+            "synonyms": [
+              "chaperone"
+            ]
+          }
+        },
+        {
+          "id": "the_first_curse",
+          "name": {
+            "value": "the first curse",
+            "synonyms": [
+              "first curse"
+            ]
+          }
+        },
+        {
+          "id": "the_jade_rabbit",
+          "name": {
+            "value": "the jade rabbit",
+            "synonyms": [
+              "jade rabbit"
+            ]
+          }
+        },
+        {
+          "id": "the_last_word",
+          "name": {
+            "value": "the last word",
+            "synonyms": [
+              "last word"
+            ]
+          }
+        },
+        {
+          "id": "thorn",
+          "name": {
+            "value": "thorn",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "thunderlord",
+          "name": {
+            "value": "thunderlord",
+            "synonyms": [
+              "thunder lord"
+            ]
+          }
+        },
+        {
+          "id": "tlaloc",
+          "name": {
+            "value": "tlaloc",
+            "synonyms": [
+              "ta lol lock"
+            ]
+          }
+        },
+        {
+          "id": "touch_of_malice",
+          "name": {
+            "value": "touch of malice",
+            "synonyms": [
+              "tom"
+            ]
+          }
+        },
+        {
+          "id": "trespasser",
+          "name": {
+            "value": "trespasser",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "truth",
+          "name": {
+            "value": "truth",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "universal_remote",
+          "name": {
+            "value": "universal remote",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "vex_mythoclast",
+          "name": {
+            "value": "vex mythoclast",
+            "synonyms": [
+              "the vex",
+              "my vex",
+              "vex mytho",
+              "mythoclast",
+              "mytho clast"
+            ]
+          }
+        },
+        {
+          "id": "vision_of_confluence_adept",
+          "name": {
+            "value": "vision of confluence adept",
+            "synonyms": [
+              "vision adept",
+              "vision of confluence adept"
+            ]
+          }
+        },
+        {
+          "id": "word_of_crota_adept",
+          "name": {
+            "value": "word of crota adept",
+            "synonyms": [
+              "word of crota adept",
+              "word of krota adept"
+            ]
+          }
+        },
+        {
+          "id": "zaoulis_bane_adept",
+          "name": {
+            "value": "zaoulis bane adept",
+            "synonyms": [
+              "zaouli's bane adept",
+              "za houli's bane adept"
+            ]
+          }
+        },
+        {
+          "id": "zen_meteor",
+          "name": {
+            "value": "zen meteor",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "zhalo_supercell",
+          "name": {
+            "value": "zhalo supercell",
+            "synonyms": [
+              "zhalo super cell",
+              "zalo super cell",
+              "zalo supercell"
+            ]
+          }
+        },
+        {
+          "id": "sweet_business",
+          "name": {
+            "value": "sweet business",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "riskrunner",
+          "name": {
+            "value": "riskrunner",
+            "synonyms": [
+              "risk runner"
+            ]
+          }
+        },
+        {
+          "id": "sunshot",
+          "name": {
+            "value": "sunshot",
+            "synonyms": [
+              "sun shot"
+            ]
+          }
+        },
+        {
+          "id": "coldheart",
+          "name": {
+            "value": "coldheart",
+            "synonyms": [
+              "cold heart"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "id": "Elicit.Intent-EquipLoadout.IntentSlot-LOADOUT",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "What activity is this load-out for?"
+        },
+        {
+          "type": "PlainText",
+          "value": "Get load-out for which activity?"
+        },
+        {
+          "type": "PlainText",
+          "value": "What load-out activity slot should I retrieve from?"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-SaveLoadout.IntentSlot-LOADOUT",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "What load-out activity slot should I use?"
+        },
+        {
+          "type": "PlainText",
+          "value": "Save load-out for which activity?"
+        },
+        {
+          "type": "PlainText",
+          "value": "What activity am I saving this load-out for?"
+        }
+      ]
+    }
+  ],
+  "dialog": {
+    "version": "1.0",
+    "intents": [
+      {
+        "name": "EquipLoadout",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "LOADOUT",
+            "type": "LOADOUT",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-EquipLoadout.IntentSlot-LOADOUT"
+            }
+          },
+          {
+            "name": "INTENT_EQUIP",
+            "type": "INTENT_EQUIP",
+            "elicitationRequired": false,
+            "confirmationRequired": false,
+            "prompts": {}
+          },
+          {
+            "name": "FILTER",
+            "type": "FILTER",
+            "elicitationRequired": false,
+            "confirmationRequired": false,
+            "prompts": {}
+          }
+        ]
+      },
+      {
+        "name": "SaveLoadout",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "LOADOUT",
+            "type": "LOADOUT",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-SaveLoadout.IntentSlot-LOADOUT"
+            }
+          },
+          {
+            "name": "FILTER",
+            "type": "FILTER",
+            "elicitationRequired": false,
+            "confirmationRequired": false,
+            "prompts": {}
+          },
+          {
+            "name": "INTENT_SAVE",
+            "type": "INTENT_SAVE",
+            "elicitationRequired": false,
+            "confirmationRequired": false,
+            "prompts": {}
+          }
+        ]
+      }
+    ]
+  }
+}
