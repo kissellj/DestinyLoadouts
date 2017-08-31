@@ -77,17 +77,17 @@ import urllib
 import urllib2
 
 # app_id is found on Skill Information tab of your skill: https://developer.amazon.com
-app_id = "amzn1.ask.skill.8f96749d-8fa5-4a44-8f17-3bd7f7e69aa8"
+app_id = "XXXXX.XXX.XXXXX.XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 
 # api_key is found in your Bungie application configuration: https://www.bungie.net/en/Application
-api_key = "d13a16082aa647daa8d0ef92b23510f7"
+api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 # Postgres Database connection information for Bungie Manifest.
 # Use bootstrap-db.sh to create a postgresql database schema.
 # And use bungie-manifest-refresh.sh as a cronjob to populate it and keep it updated.
-db_host = "alexaskillsdb.cyg3ary03vlj.us-east-1.rds.amazonaws.com"
-db_user = "bungie"
-db_pass = "Destiny5355"
+db_host = "XXXXXXXXXXXXX.XXXXXXXXXXXX.us-XXXX-X.rds.amazonaws.com"
+db_user = "XXXXXXXXXXX"
+db_pass = "XXXXXXXXXXX"
 
 # There are two DB names in the same postgres database.
 # One is for this app
